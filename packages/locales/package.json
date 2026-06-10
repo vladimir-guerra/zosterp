@@ -1,0 +1,17 @@
+{
+  "name": "@repo/locales",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@repo/tsconfig": "workspace:^"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

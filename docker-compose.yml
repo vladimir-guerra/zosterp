@@ -1,39 +1,40 @@
 services:
-  api:
-    build:
-      context: .
-      dockerfile: apps/api/Dockerfile
-    ports:
-      - "${PORT}:${PORT}"
-    environment:
-      DB_HOST: postgresql
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-    depends_on:
-      - postgresql
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/api/Dockerfile
+  #   ports:
+  #     - "3001:3001"
+  #   depends_on:
+  #     - postgresql
+  #   environment:
+  #     - DATABASE_URL=postgresql://zosterp:${DB_PASSWORD}@postgresql:5432/zosterp
+  #     - PORT=3001
+  #     - NODE_ENV = ${NODE_ENV}
+  #   volumes:
+  #     - ./apps/api:/app
 
   web:
     build:
       context: .
-      dockerfile: apps/web/Dockerfile
+      dockerfile: ./apps/web/Dockerfile
     ports:
-      - "3001:3001"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:${PORT} 
-    depends_on:
-      - api
+      - "5173:5173"
+    #depends_on:
+    #  - api
+    volumes:
+      - ./apps/web:/app
 
   postgresql:
     image: postgres:alpine
     environment:
-      POSTGRES_USER: ${DB_USER}
+      POSTGRES_USER: zosterp
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_DB: zosterp
     ports:
-      - "${DB_PORT}:5432"
+      - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  pgdata:

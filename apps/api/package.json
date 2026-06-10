@@ -1,0 +1,23 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": ""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@repo/schemas": "workspace:^",
+    "@repo/tsconfig": "workspace:^",
+    "dotenv-safe": "^9.1.0"
+  },
+  "devDependencies": {
+    "@types/dotenv-safe": "^9.1.0",
+    "@types/node": "^24.12.3"
+  }
+}
