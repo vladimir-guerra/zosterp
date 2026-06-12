@@ -2,17 +2,14 @@
   "name": "@repo/schemas",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/index.js",
-  "types": "./src/index.ts",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "keywords": [],
   "author": "",
-  "private": true,
   "license": "ISC",
   "dependencies": {
-    "@repo/tsconfig": "workspace:^",
     "zod": "^4.4.3"
-  },
-  "exports": {
-    ".": "./src/index.ts"
   }
 }

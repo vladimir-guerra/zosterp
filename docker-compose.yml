@@ -1,40 +1,9 @@
 services:
-  # api:
-  #   build:
-  #     context: .
-  #     dockerfile: ./apps/api/Dockerfile
-  #   ports:
-  #     - "3001:3001"
-  #   depends_on:
-  #     - postgresql
-  #   environment:
-  #     - DATABASE_URL=postgresql://zosterp:${DB_PASSWORD}@postgresql:5432/zosterp
-  #     - PORT=3001
-  #     - NODE_ENV = ${NODE_ENV}
-  #   volumes:
-  #     - ./apps/api:/app
-
   web:
     build:
       context: .
       dockerfile: ./apps/web/Dockerfile
     ports:
       - "5173:5173"
-    #depends_on:
-    #  - api
     volumes:
       - ./apps/web:/app
-
-  postgresql:
-    image: postgres:alpine
-    environment:
-      POSTGRES_USER: zosterp
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: zosterp
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata:
