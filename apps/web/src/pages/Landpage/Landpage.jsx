@@ -17,7 +17,9 @@ export default function Landpage() {
           </ul>
         </nav>
       </header>
-      <main></main>
+      <main>
+        <p>Landpage</p>
+      </main>
       <footer></footer>
     </>
   );

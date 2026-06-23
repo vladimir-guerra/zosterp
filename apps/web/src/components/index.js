@@ -1,2 +1,2 @@
 export { Form, Input } from "./Forms";
-export { CompanyForm } from "./Company";
+export { Card } from "./Card"

@@ -8,7 +8,9 @@ i18n
   .use(initReactI18next)
   .use(LanguageDetector)
   .use(
-    ResourcesToBackend((lng, ns) => import(`@repo/locales/src/${lng}/${ns}.json`)),
+    ResourcesToBackend(
+      (lng, ns) => import(`../../../../packages/locales/src/${lng}/${ns}.json`),
+    ),
   )
   .init({
     ns: ["web", "schemas", "api"],

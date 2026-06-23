@@ -1,10 +1,11 @@
 import { z } from "zod";
 
-const emailSchema = z.email("INVALID_EMAIL");
+export const emailSchema = z.email("INVALID_EMAIL");
 const passwordSchema = z.string().min(8, "PW_TOO_SHORT");
 
 export const insertUserSchema = z
   .object({
+    id: z.uuid().optional(),
     name: z.string().min(1, "NAME_REQUIRED"),
     surname: z.string().min(1, "SURNAME_REQUIRED"),
     email: emailSchema,
@@ -29,4 +30,11 @@ export const companySchema = z.object({
   email: emailSchema,
 });
 
-export const insertCompanySchema = companySchema.omit({ id: true });
+export const insertTaskSchema = z.object({
+  id: z.uuid().optional(),
+  parentId: z.uuid().optional(),
+  title: z.string().min(1, "NAME_REQUIRED"),
+  description: z.string().optional(),
+  approxFinishDate: z.string().optional(),
+  startedAt: z.string(),
+});

@@ -1,15 +1,34 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { CompanyForm } from "../../components";
-import { CompanyCard } from "../../components/Company";
+import { Card } from "../../components";
+import { companySchema } from "@repo/schemas";
+import { Form, Input } from "../../components";
+
+function CompanyForm({ setCreated }) {
+  const { t } = useTranslation("web");
+  const handleSubmit = (data) => {
+    data.id = crypto.randomUUID();
+    setCreated(data);
+  };
+  return (
+    <Form schema={companySchema} handler={handleSubmit}>
+      <h1>{t("create-company")}</h1>
+      <Input name={"socialReason"} />
+      <Input name={"commercialName"} />
+      <Input name={"industry"} />
+      <Input name={"country"} />
+      <Input name={"email"} />
+    </Form>
+  );
+}
 
 export default function Dashboard() {
   const { t } = useTranslation("web");
   const [companies, setCompanies] = useState([]);
   const [creating, setCreating] = useState(false);
   const [created, setCreated] = useState(null);
-  const [deleted, setDeleted] = useState(null);
+  const [deletedId, setDeletedId] = useState(null);
 
   useEffect(() => {
     if (created) {
@@ -20,33 +39,39 @@ export default function Dashboard() {
   }, [created]);
 
   useEffect(() => {
-    if (deleted) {
-      setCompanies((prev) => prev.filter((c) => c.id !== deleted.id));
+    if (deletedId) {
+      setCompanies((prev) => prev.filter((c) => c.id !== deletedId));
       setDeleted(null);
     }
-  }, [deleted]);
+  }, [deletedId]);
 
   return (
     <>
       {creating && <CompanyForm setCreated={setCreated} />}
       <header>
         <nav>
-          <li>
-            <button onClick={() => setCreating(true)}>
-              {t("add-company")}
-            </button>
-          </li>
+          <ul>
+            <li>
+              <button onClick={() => setCreating(true)}>{t("add")}</button>
+            </li>
+          </ul>
         </nav>
       </header>
       <main>
         {companies ? (
           <ul>
-            {companies.map((company) => (
-              <CompanyCard
-                key={company.id}
-                data={company}
-                setDeleted={setDeleted}
-              />
+            {companies.map((c) => (
+              <li key={c.id}>
+                <Card id={c.id} setDeleted={setDeletedId}>
+                  <Link to={`/erp/${c.id}`}>
+                    <h1>{c.socialReason}</h1>
+                    <ul>
+                      <li>{c.commercialName}</li>
+                      <li>{c.email}</li>
+                    </ul>
+                  </Link>
+                </Card>
+              </li>
             ))}
           </ul>
         ) : (
