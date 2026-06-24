@@ -1,3 +1,10 @@
+# PNPM - DEPENDECIES FOR DOWNLOAD
+
+```sh
+npm install -g pnpm
+corepack use npm
+```
+
 # Turborepo starter
 
 This Turborepo starter is maintained by the Turborepo core team.
