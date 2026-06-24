@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^5.4.0",
+    "@mui/material": "^9.1.2",
     "@repo/locales": "workspace:^",
     "@repo/schemas": "workspace:^",
     "i18next": "^26.3.1",
