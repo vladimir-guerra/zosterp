@@ -4,11 +4,7 @@ import { insertUserSchema } from "@repo/schemas";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../providers";
-
-
-// Nuevas importaciones de Material UI para la estructura
 import { Box, AppBar, Toolbar, Typography, Paper } from "@mui/material";
-import React from "react";
 
 
 export default function Register() {

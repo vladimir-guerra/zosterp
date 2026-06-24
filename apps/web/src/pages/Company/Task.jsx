@@ -96,6 +96,7 @@ export default function TaskDashboard() {
                     <h1>{c.title}</h1>
                     <ul>{c.description && <li>{c.description}</li>}</ul>
                   </Link>
+                  <button onClick={() => setAssociate(true)}>{t("associate")}</button>
                 </Card>
               </li>
             ))}

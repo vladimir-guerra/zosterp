@@ -1,19 +1,31 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext(undefined);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) localStorage.setItem("user", JSON.stringify(user));
+    else localStorage.removeItem("user");
+  }, [user]);
+
   const login = (userData) => {
     try {
       setIsLoading(true);
       setUser(userData);
     } catch (error) {
+      console.error("Error al iniciar sesión", error);
     } finally {
       setIsLoading(false);
     }
   };
+
   const logout = () => setUser(null);
 
   return (
