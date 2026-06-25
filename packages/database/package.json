@@ -1,0 +1,22 @@
+{
+  "name": "@repo/database",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "exports": {
+    ".": "./src/index.js",
+    "./src/*": "./src/*"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@repo/locales": "workspace:^",
+    "bcrypt": "^6.0.0",
+    "pg": "^8.22.0",
+    "sequelize": "^6.37.8"
+  }
+}
