@@ -1,15 +1,15 @@
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import Box from "@mui/material/Box"
 
 export default function ERP() {
-  const navigate = useNavigate()
   const { t } = useTranslation("web");
   return (
     <>
       <header>
         <nav>
           <ul>
-            
+
             <li>
               <Link to={"/erp/profile"}>{t("profile")}</Link>
             </li>
@@ -20,9 +20,19 @@ export default function ERP() {
         </nav>
       </header>
       <main>
-        <Outlet />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            minHeight: "100vh",
+            bgcolor: "grey.50",
+          }}>
+          <Outlet />
+        </Box>
       </main>
-      <footer></footer>
+      <footer>
+
+      </footer>
     </>
   );
 }

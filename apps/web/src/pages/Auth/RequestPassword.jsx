@@ -49,7 +49,7 @@ export default function RequestPassword() {
           <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400, borderRadius: 2 }}>
 
             <Form schema={insertUserSchema} handler={handleSubmit}>
-              <h1>{t("request-password")}</h1>
+              <Typography variant="h4">{t("Request-password")}</Typography>
               <Input name={"email"} />
             </Form>
 

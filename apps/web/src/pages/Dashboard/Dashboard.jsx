@@ -4,6 +4,17 @@ import { Link } from "react-router-dom";
 import { Card } from "../../components";
 import { companySchema } from "@repo/schemas";
 import { Form, Input } from "../../components";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  Box,
+  Container,
+  CardContent,
+  CardMedia,
+  Paper
+} from "@mui/material";
 
 function CompanyForm({ setCreated }) {
   const { t } = useTranslation("web");
@@ -12,14 +23,16 @@ function CompanyForm({ setCreated }) {
     setCreated(data);
   };
   return (
-    <Form schema={companySchema} handler={handleSubmit}>
-      <h1>{t("create-company")}</h1>
-      <Input name={"socialReason"} />
-      <Input name={"commercialName"} />
-      <Input name={"industry"} />
-      <Input name={"country"} />
-      <Input name={"email"} />
-    </Form>
+    <Paper>
+      <Form schema={companySchema} handler={handleSubmit}>
+        <h1>{t("Create company")}</h1>
+        <Input name={"socialReason"} />
+        <Input name={"commercialName"} />
+        <Input name={"industry"} />
+        <Input name={"country"} />
+        <Input name={"email"} />
+      </Form>
+    </Paper>
   );
 }
 
@@ -47,12 +60,18 @@ export default function Dashboard() {
 
   return (
     <>
-      {creating && <CompanyForm setCreated={setCreated} />}
+      {(creating && <CompanyForm setCreated={setCreated} /> )}
       <header>
         <nav>
           <ul>
             <li>
-              <button onClick={() => setCreating(true)}>{t("add")}</button>
+              {
+                !creating && (
+                  <button onClick={() => setCreating(true)}>
+                    {t("add")}
+                  </button>
+                )
+              }
             </li>
           </ul>
         </nav>

@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import Button from "@mui/material/Button"
 
 export default function Form({ handler, schema, children }) {
   const navigate = useNavigate();
@@ -26,14 +27,15 @@ export default function Form({ handler, schema, children }) {
 
   return (
     <FormProvider {...form}>
-      <button type="button" onClick={() => navigate(-1)}>
-        {t("web:back")}
-      </button>
+      <Button type="button" variant="outlined" onClick={() => navigate(-1)}
+        sx={{mb: 2}}>
+          {t("web:back")}
+      </Button>
       <form onSubmit={form.handleSubmit(handleSend)}>
         {children}
-        <button type="submit" disabled={loading}>
-          {loading ? t("web:loading") : t("web:send")}
-        </button>
+        <Button type="submit" disabled={loading} variant="outlined">
+            {loading ? t("web:loading") : t("web:send")}
+        </Button>
         {error && <span>{t(error)}</span>}
       </form>
     </FormProvider>

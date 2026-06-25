@@ -1,6 +1,7 @@
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-
+import Textfield from "@mui/material/TextField"
+ 
 export default function Input({ name, type = "text" }) {
   const lowerName = name.toLowerCase();
   const finalType = lowerName.includes("password")
@@ -19,12 +20,21 @@ export default function Input({ name, type = "text" }) {
 
   return (
     <div>
-      <label htmlFor={name}>{t(`web:${name}`)}</label>
-      <input
+      <Textfield 
+        label={name}
+        variant="outlined"
         id={name}
-        type={finalType}
-        {...register(name)}
+        type={finalType} 
+        {...register(name)} 
+        required={true} 
+        sx={{
+          m: 1,
+          mb: 2,
+          position: "relative",
+          width: "100%"
+        }}
       />
+
       {errorMessage && <span>{t(`schemas:${errorMessage}`)}</span>}
     </div>
   );

@@ -52,16 +52,30 @@ export default function Register() {
           }}
         >
           {/* Tarjeta blanca con sombra que envuelve el formulario */}
-          <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400, borderRadius: 2 }}>
+          <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400, borderRadius: 2, justifyContent: 'center' }}>
 
             <Form schema={insertUserSchema} handler={handleSubmit}>
-              <h1>{t("register")}</h1>
+              <Typography variant="h4">{t("Register")}</Typography>
               <Input name={"name"} />
               <Input name={"surname"} />
               <Input name={"email"} />
               <Input name={"password"} />
               <Input name={"confirmPassword"} />
-              <Link to={"/auth/login"}>{t("login")}</Link>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 1.5,
+                  mt: 1,
+                }}
+              >
+                <Link to={"/auth/login"} style={{
+                  textDecoration: "none",
+                  color: "#1976d2",
+                  fontSize: "1.2rem",
+                }}>{t("Login")}</Link>
+              </Box>
             </Form>
 
           </Paper>

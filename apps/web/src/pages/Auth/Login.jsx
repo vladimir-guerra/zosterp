@@ -70,14 +70,13 @@ export default function Login() {
           <Form schema={loginSchema} handler={handleSubmit}>
             {/* Reemplazamos el <h1> puro por Typography para respetar el diseño de MUI */}
             <Typography
-              variant="h5"
-              component="h1"
+              variant="h4"
               align="center"
               fontWeight="bold"
               gutterBottom
               sx={{ mb: 3 }}
             >
-              {t("login")}
+              {t("Login")}
             </Typography>
 
             <Input name={"email"} />
@@ -90,7 +89,7 @@ export default function Login() {
                 flexDirection: "column",
                 alignItems: "center",
                 gap: 1.5,
-                mt: 3,
+                mt: 1,
               }}
             >
               <Link
@@ -98,7 +97,7 @@ export default function Login() {
                 style={{
                   textDecoration: "none",
                   color: "#1976d2",
-                  fontSize: "0.9rem",
+                  fontSize: "1.2rem",
                 }}
               >
                 {t("recover-password")}
@@ -108,7 +107,7 @@ export default function Login() {
                 style={{
                   textDecoration: "none",
                   color: "#1976d2",
-                  fontSize: "0.9rem",
+                  fontSize: "1.2rem",
                 }}
               >
                 {t("user-register")}
