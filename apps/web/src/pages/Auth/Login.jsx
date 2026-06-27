@@ -13,7 +13,7 @@ export default function Login() {
   const date = new Date();
   const Year = `${date.getFullYear()}`;
 
-  const handleSubmit = (data) => {login(data); };
+  const handleSubmit = (data) => { login(data); };
 
   return (
     // Contenedor principal: Ocupa toda la pantalla y organiza los elementos en columna
@@ -82,38 +82,38 @@ export default function Login() {
             <Input name={"email"} />
             <Input name={"password"} />
 
-            {/* Contenedor flexible para ordenar y estilizar un poco los links de React Router */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 1.5,
-                mt: 1,
+          </Form>
+        {/* Contenedor flexible para ordenar y estilizar un poco los links de React Router */}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1.5,
+              mt: 1,
+            }}
+          >
+            <Link
+              to={"/auth/register"}
+              style={{
+                textDecoration: "none",
+                color: "#1976d2",
+                fontSize: "1.2rem",
               }}
             >
-              <Link
-                to={"/auth/password"}
-                style={{
-                  textDecoration: "none",
-                  color: "#1976d2",
-                  fontSize: "1.2rem",
-                }}
-              >
-                {t("recover-password")}
-              </Link>
-              <Link
-                to={"/auth/register"}
-                style={{
-                  textDecoration: "none",
-                  color: "#1976d2",
-                  fontSize: "1.2rem",
-                }}
-              >
-                {t("user-register")}
-              </Link>
-            </Box>
-          </Form>
+              {t("user-register")}
+            </Link>
+            <Link
+              to={"/auth/password"}
+              style={{
+                textDecoration: "none",
+                color: "#1976d2",
+                fontSize: "1.2rem",
+              }}
+            >
+              {t("recover-password")}
+            </Link>
+          </Box>
         </Paper>
       </Box>
 

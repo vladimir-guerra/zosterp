@@ -4,7 +4,7 @@ import { insertUserSchema } from "@repo/schemas";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../providers";
-import { Box, AppBar, Toolbar, Typography, Paper } from "@mui/material";
+import { Box, AppBar, Toolbar, Typography, Paper, Button } from "@mui/material";
 
 
 export default function Register() {
@@ -67,17 +67,17 @@ export default function Register() {
                   flexDirection: "column",
                   alignItems: "center",
                   gap: 1.5,
-                  mt: 1,
                 }}
               >
-                <Link to={"/auth/login"} style={{
-                  textDecoration: "none",
-                  color: "#1976d2",
-                  fontSize: "1.2rem",
-                }}>{t("Login")}</Link>
               </Box>
             </Form>
-
+            <Link to={"/auth/login"} style={{
+              textDecoration: "none",
+              color: "#1976d2",
+              fontSize: "1.2rem",
+              display: "flex",
+              marginTop: "1rem"
+            }}>{t("Login")}</Link>
           </Paper>
         </Box>
 
