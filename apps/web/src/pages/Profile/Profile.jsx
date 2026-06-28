@@ -7,7 +7,6 @@ export default function Profile() {
   const { t } = useTranslation()
   return (
     <>
-      <button onClick={() => logout()}>{t("logout")}</button>
     </>
   )
 }

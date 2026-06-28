@@ -13,7 +13,8 @@ import {
   Container,
   CardContent,
   CardMedia,
-  Paper
+  Paper,
+  Divider
 } from "@mui/material";
 
 function CompanyForm({ setCreated }) {
@@ -23,14 +24,39 @@ function CompanyForm({ setCreated }) {
     setCreated(data);
   };
   return (
-    <Paper>
+    <Paper
+      elevation={3}
+      sx={{
+        p: { xs: 3, md: 4 }, // Padding adaptable: 3 en móviles, 4 en pantallas más grandes
+        borderRadius: 2,
+        width: '100%',
+        maxWidth: 500, // Evita que el formulario se estire demasiado en pantallas gigantes
+        mx: 'auto', // Lo centra horizontalmente si está en un contenedor amplio
+        mt: 2
+      }}
+    >
       <Form schema={companySchema} handler={handleSubmit}>
-        <h1>{t("Create company")}</h1>
-        <Input name={"socialReason"} />
-        <Input name={"commercialName"} />
-        <Input name={"industry"} />
-        <Input name={"country"} />
-        <Input name={"email"} />
+
+        {/* Encabezado del Formulario */}
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h5" component="h2" color="primary.main" fontWeight="bold">
+            {t("Create company")}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Ingresa los datos correspondientes para registrar una nueva empresa.
+          </Typography>
+        </Box>
+
+        <Divider sx={{ mb: 3 }} />
+
+        {/* Contenedor de Inputs */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Input name={"socialReason"} label={t("Social Reason")} />
+          <Input name={"commercialName"} label={t("Commercial Name")} />
+          <Input name={"industry"} label={t("Industry")} />
+          <Input name={"country"} label={t("Country")} />
+          <Input name={"email"} label={t("Email")} />
+        </Box>
       </Form>
     </Paper>
   );
@@ -60,7 +86,7 @@ export default function Dashboard() {
 
   return (
     <>
-      {(creating && <CompanyForm setCreated={setCreated} /> )}
+      {(creating && <CompanyForm setCreated={setCreated} />)}
       <header>
         <nav>
           <ul>
