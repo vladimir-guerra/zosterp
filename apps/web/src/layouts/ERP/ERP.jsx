@@ -63,12 +63,6 @@ export default function ERP() {
             >
               {t("companies")}
             </Button>
-            
-            {/* Opcional: Botón de Logout si lo necesitas globalmente */}
-            {/* <Button component={Link} to="/auth/logout" variant="outlined" color="error">
-              {t("logout")}
-            </Button> 
-            */}
           </Box>
         </Toolbar>
       </AppBar>

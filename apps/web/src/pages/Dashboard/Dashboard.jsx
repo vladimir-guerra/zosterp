@@ -14,7 +14,8 @@ import {
   CardContent,
   CardMedia,
   Paper,
-  Divider
+  Divider,
+  Grid
 } from "@mui/material";
 
 function CompanyForm({ setCreated }) {
@@ -43,7 +44,7 @@ function CompanyForm({ setCreated }) {
             {t("Create company")}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            Ingresa los datos correspondientes para registrar una nueva empresa.
+            {t("Complete the next fields to log the information of your enterprise")}
           </Typography>
         </Box>
 
@@ -89,36 +90,30 @@ export default function Dashboard() {
       {(creating && <CompanyForm setCreated={setCreated} />)}
       <header>
         <nav>
-          <ul>
-            <li>
-              {
-                !creating && (
-                  <button onClick={() => setCreating(true)}>
-                    {t("add")}
-                  </button>
-                )
-              }
-            </li>
-          </ul>
+          {
+            !creating && (
+              <Button onClick={() => setCreating(true)} variant="text" sx={{ m: 3 }}>
+                {t("add company")}
+              </Button>
+            )
+          }
         </nav>
       </header>
       <main>
         {companies ? (
-          <ul>
+          <Grid container spacing={9} sx={{ m: 10 }}>
             {companies.map((c) => (
-              <li key={c.id}>
-                <Card id={c.id} setDeleted={setDeletedId}>
-                  <Link to={`/erp/${c.id}`}>
-                    <h1>{c.socialReason}</h1>
-                    <ul>
-                      <li>{c.commercialName}</li>
-                      <li>{c.email}</li>
-                    </ul>
-                  </Link>
-                </Card>
-              </li>
+              <Card id={c.id} setDeleted={setDeletedId} sx={{ height: '100%'}}>
+                <Link to={`/erp/${c.id}`}>
+                  <h1>{c.socialReason}</h1>
+                  <ul>
+                    <li>{c.commercialName}</li>
+                    <li>{c.email}</li>
+                  </ul>
+                </Link>
+              </Card>
             ))}
-          </ul>
+          </Grid>
         ) : (
           <p>{t("no-companies")}</p>
         )}
