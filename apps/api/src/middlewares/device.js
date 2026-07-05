@@ -7,7 +7,7 @@ export const getDevice = async (req, _res, next) => {
       ? `${uaResult?.browser?.name} ${uaResult?.browser?.major} - ${uaResult?.os?.name}`
       : "Unkwon";
 
-    req.ua = { device, result: uaResult };
+    req.device = device;
     return next();
   } catch (error) {
     return next(error);

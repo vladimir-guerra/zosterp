@@ -1,3 +1,4 @@
+import { languages } from "@repo/locales";
 import { z } from "zod";
 
 export const emailSchema = z.email("INVALID_EMAIL");
@@ -5,12 +6,12 @@ const passwordSchema = z.string().min(8, "PW_TOO_SHORT");
 
 export const insertUserSchema = z
   .object({
-    id: z.uuid().optional(),
     name: z.string().min(1, "NAME_REQUIRED"),
     surname: z.string().min(1, "SURNAME_REQUIRED"),
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string().min(1, "CONFIRM_PW_REQUIRED"),
+    language: z.enum(...languages).default("en").catch("en"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "PW_DONT_MATCH",

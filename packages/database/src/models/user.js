@@ -33,6 +33,10 @@ export const User = sequelize.define(
       defaultValue: "en",
       allowNull: false,
     },
+    isValid: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     passwordHash: {
       type: DataTypes.STRING(255),
       allowNull: false,
@@ -98,6 +102,6 @@ export const Token = sequelize.define(
   },
 );
 
-User.prototype.validatePassword = async function (password) {
+User.prototype.comparePassword = async function (password) {
   return await compare(password, this.password_hash);
 };

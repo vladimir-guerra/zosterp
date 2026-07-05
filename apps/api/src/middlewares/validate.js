@@ -1,6 +1,10 @@
 import createError from "http-errors";
 
-export const validate = (schema) => {
+/**
+ * Valida req.body comparandolo con un esquema zod. 
+ * La información parseada pasa a req.data
+ */
+export default function validate(schema) {
   return (req, _, next) => {
     try {
       const { error, value } = schema.validate(req.body, {

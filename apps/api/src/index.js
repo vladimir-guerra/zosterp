@@ -36,7 +36,8 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(getLanguage);
 
-app.use("/auth", authRouter)
+app.use("/auth", authRouter);
+app.use("/profile");
 
 app.use(errorHandler);
 
