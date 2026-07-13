@@ -1,23 +1,15 @@
-import createError from "http-errors";
+import jwt from "jsonwebtoken";
 
-export const isAuth = async (req, _res, next) => {
+export default async function isAuth(req, res, next) {
   try {
-    const header = req.headers["authorization"];
-    const token = header?.split(" ")[1];
+    const token = req.headers["authorization"]?.split(" ")[1];
+    if (!token) throw sendError(404, "auth.token.not_found");
 
-    if (!token) throw createError(404, "not_session");
-
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-    } catch (error) {
-      throw createError(400, error);
-    }
-
-    req.user = { id: decoded.userId };
-    req.language = decoded.language
-    return next();
+    const { userId } = jwt.verify(token, process.env.JWT_ACCESS);
+    req.userId = userId;
+    
+    next();
   } catch (error) {
     next(error);
   }
-};
+}

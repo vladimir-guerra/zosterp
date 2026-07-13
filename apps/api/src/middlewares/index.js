@@ -1,4 +1,3 @@
-export * from "./device.js";
-export * from "./language.js";
-export * from "./auth.js";
+export { getLanguage, setBodyLanguage } from "./language.js";
 export { default as validate } from "./validate.js";
+export { default as getDevice } from "./device.js";

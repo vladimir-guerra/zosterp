@@ -1,38 +1,29 @@
-import { languages } from "@repo/locales";
-import { getLocales } from ".";
+import getLocale from "./locale.js";
 
-const translationsCache = new Map();
+export default async function handleErrors(err, req, res, _next) {
+  try {
+    const { status = 500, message = "" } = err;
+    const codes = [...new Set(message.split(",").map((c) => c.trim()))];
+    const locale = await getLocale(req.language, req.locale || "api");
 
-export default async function errorHandler(err, req, res, _next) {
-  const status = err.status || 500;
-  const DEFAULT_CODE = "internal_server_error";
-  const rawMessage = err.message || DEFAULT_CODE;
-
-  const codes = [...new Set(rawMessage.split(",").map((c) => c.trim()))];
-  const lang = languages.includes(req.language) ? req.language : "en";
-
-  let translations = translationsCache.get(lang);
-
-  if (!translations) {
-    try {
-      translations = await getLocales(lang);
-      translationsCache.set(lang, translations);
-    } catch (e) {
-      console.error("Error loading locales:", e);
-      translations = {}; // Fallback en caso de fallo al leer locales
+    let info = {};
+    for (const c of codes) {
+      const translation = c.split(".").reduce((obj, key) => {
+        return obj && typeof obj === "object" ? obj[key] : undefined;
+      }, locale);
+      info[c] = translation || c;
     }
+
+    console.error(`[ERROR ${status}]:`, info);
+
+    return res.status(status).json({
+      success: false,
+      status,
+      info,
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
+  } catch (error) {
+    console.error("Critical failure in error handler:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
-
-  const info = {};
-  for (const c of codes)
-    info[c] = translations[c] || translations[DEFAULT_CODE];
-
-  console.error(`[Error ${status}]:`, info);
-
-  return res.status(status).json({
-    error: true,
-    status,
-    info,
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
-  });
 }

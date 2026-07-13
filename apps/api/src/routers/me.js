@@ -1,38 +1,21 @@
-import { Router } from "express";
-import createError from "http-errors";
-import { User, Token } from "@repo/database";
-import { sendMail } from "@repo/email";
-import { setBodyLanguage, getDevice, validate } from "../middlewares";
-import { emailSchema } from "@repo/schemas";
-import { generateTokens } from "../handlers";
-import jwt from "jsonwebtoken";
+import express from "express";
+import { getDevice, validate } from "../middlewares/index.js";
+import { emailSchema, updateUser } from "@repo/schemas";
+import {
+  deleteSession,
+  deleteUser,
+  get,
+  getSessions,
+  renewEmail,
+  requestEmail,
+  update,
+} from "../endpoints/me.js";
+export const meRouter = express.Router();
 
-export const authRouter = Router();
-
-authRouter.post("/email", validate(emailSchema), async (req, res, next) => {
-  try {
-    const { email } = req.data;
-    const json = await import(`@repo/locales/src/${req.language}/api.json`);
-    await sendMail({
-      to: email,
-      subject: `${json["change-email"]}`,
-      html: "<p>",
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-authRouter.patch("/email", validate(emailSchema), async (req, res, next) => {
-  try {
-    const { email } = req.data;
-    const json = await import(`@repo/locales/src/${req.language}/api.json`);
-    await sendMail({
-      to: email,
-      subject: `${json["change-email"]}`,
-      html: "<p>",
-    });
-  } catch (error) {
-    next(error);
-  }
-});
+meRouter.get("/", get);
+meRouter.get("/sessions", getDevice, getSessions);
+meRouter.delete("/sessions/:id", deleteSession);
+meRouter.delete("/", deleteUser);
+meRouter.post("/email", validate(emailSchema), requestEmail);
+meRouter.patch("/email", renewEmail);
+meRouter.patch("/", validate(updateUser), update);

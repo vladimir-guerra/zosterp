@@ -1,0 +1,11 @@
+{
+  "auth": {
+    "TwoFA": {
+      "title": "Verificate your login"
+    },
+    "password": {
+      "title": "Change your password",
+      "send": "Change password"
+    }
+  }
+}

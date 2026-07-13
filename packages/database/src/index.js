@@ -1,4 +1,3 @@
-import { Sequelize } from "sequelize";
-
-export const sequelize = new Sequelize("sqlite::memory");
-export * from "./models"
+export * from "./models/index.js";
+export { sequelize } from "./config.js";
+export { Op } from "sequelize";

@@ -1,6 +1,6 @@
 import { languages } from "@repo/locales";
 
-export const getLanguage = async (req, _res, next) => {
+export const getLanguage = async (req, res, next) => {
   try {
     if (req.cookies.language) {
       req.language = req.cookies.language;
@@ -12,13 +12,25 @@ export const getLanguage = async (req, _res, next) => {
       ?.split("-")[0]
       ?.trim()
       .toLowerCase();
-    req.language = languages.includes(parsedPrefix) ? parsedPrefix : "en";
+    req.language = languages.includes(parsedPrefix)
+      ? parsedPrefix
+      : languages[0];
+
     res.cookie("language", req.language, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, //7 days
     });
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const setBodyLanguage = async (req, _res, next) => {
+  try {
+    req.body.language = req.language;
     next();
   } catch (error) {
     next(error);

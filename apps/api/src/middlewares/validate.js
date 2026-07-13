@@ -1,26 +1,18 @@
 import createError from "http-errors";
+import { validateData } from "@repo/schemas";
 
 /**
- * Valida req.body comparandolo con un esquema zod. 
- * La información parseada pasa a req.data
+ * Valida la información entrante en req.body y la inserta en req.data
+ * * @param schema - Un esquema Zod para la comparación
  */
 export default function validate(schema) {
-  return (req, _, next) => {
-    try {
-      const { error, value } = schema.validate(req.body, {
-        abortEarly: false,
-        stripUnknown: true,
-      });
-
-      if (error) {
-        const message = error.details.map((d) => d.message).join(",");
-        throw createError(400, message);
-      }
-
-      req.data = value;
-      return next();
-    } catch (error) {
-      return next(error);
+  return (req, _res, next) => {
+    const result = validateData(schema, req.body);
+    if (!result.success) {
+      req.locale = "schema";
+      return next(createError(400, result.error));
     }
+    req.data = result.data;
+    next();
   };
-};
+}

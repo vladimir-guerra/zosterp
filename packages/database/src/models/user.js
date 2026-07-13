@@ -1,7 +1,7 @@
-import { DataTypes, Op } from "sequelize";
-import { sequelize } from "../index";
 import { languages } from "@repo/locales";
-import { hash, compare, genSalt } from "bcrypt";
+import { sequelize } from "../config.js";
+import { DataTypes, Op } from "sequelize";
+import { compare, hash } from "bcrypt";
 
 export const User = sequelize.define(
   "User",
@@ -26,12 +26,11 @@ export const User = sequelize.define(
     },
     has_2fa: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
+      defaultValue: true,
     },
     language: {
       type: DataTypes.ENUM(...languages),
-      defaultValue: "en",
-      allowNull: false,
+      defaultValue: languages[0],
     },
     isValid: {
       type: DataTypes.BOOLEAN,
@@ -41,67 +40,38 @@ export const User = sequelize.define(
       type: DataTypes.STRING(255),
       allowNull: false,
     },
-    password: {
-      type: DataTypes.VIRTUAL,
-    },
+    password: { type: DataTypes.VIRTUAL },
   },
   {
+    underscored: true,
     timestamps: true,
     paranoid: true,
-    underscored: true,
     hooks: {
       beforeValidate: async (user) => {
-        if (user.changed("password")) {
-          const salt = await genSalt(10);
-          user.passwordHash = await hash(user.password, salt);
-        }
+        if (user.password) user.passwordHash = await hash(user.password, 10);
+      },
+      afterUpdate: async (user) => {
+        if (user.changed("isValid") && user.isValid === true && user.has_2fa)
+          user.has_2fa = false;
       },
     },
     defaultScope: { attributes: { exclude: ["passwordHash"] } },
   },
 );
 
-export const Token = sequelize.define(
-  "Token",
-  {
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
-    },
-    userId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        key: "id",
-        model: "users",
-      },
-    },
-    device: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  },
-  {
-    timestamps: true,
-    underscored: true,
-    hooks: {
-      afterCreate: async (token, options) => {
-        await Token.destroy({
-          where: {
-            userId: token.userId,
-            device: token.device,
-            id: {
-              [Op.ne]: token.id,
-            },
-          },
-          transaction: options.transaction,
-        });
-      },
-    },
-  },
-);
-
-User.prototype.comparePassword = async function (password) {
-  return await compare(password, this.password_hash);
+User.prototype.checkPassword = async function (password) {
+  return await compare(password, this.passwordHash);
 };
+
+/**
+ * Limpia usuarios no validados hace 5 minutos
+ */
+async function cleanUsers() {
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+  await User.destroy({
+    where: {
+      isValid: false,
+      createdAt: { [Op.lt]: fiveMinutesAgo },
+    },
+  });
+}

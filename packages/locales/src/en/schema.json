@@ -1,0 +1,19 @@
+{
+  "str": {
+    "invalid": "Invalid value",
+    "required": "Required value"
+  },
+  "datetime_invalid": "Invalid datetime",
+  "email": {
+    "invalid": "Invalid email",
+    "required": "Required email"
+  },
+  "pw": {
+    "short": "Password is too short (At least 10 characters.)",
+    "confirm": "Passwords doesn't match"
+  },
+  "bool_invalid": "Invalid boolean",
+  "code_invalid": "Invalid code",
+  "lang_invalid": "Invalid language",
+  "name_invalid": "Invalid name"
+}

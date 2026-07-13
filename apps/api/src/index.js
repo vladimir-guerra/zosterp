@@ -1,55 +1,34 @@
-import "safe-dotenv/config";
-import cookieParser from "cookie-parser";
-import express from "express";
+import "dotenv-safe/config.js";
 import { sequelize } from "@repo/database";
-import { getLanguage } from "./middlewares";
-import { errorHandler } from "./handlers";
-import { authRouter } from "./routers";
-
-const rateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-  standardHeaders: "draft-8", // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers.
-  ipv6Subnet: 56, // Set to 60 or 64 to be less aggr
-});
-
-const slowLimiter = slowDown({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  delayAfter: 5, // Allow 5 requests per 15 minutes.
-  delayMs: (hits) => hits * 100, // Add 100 ms of delay to every request after the 5th one.
-});
-
-const corsOptions = {
-  origin: process.env.API_ORIGIN || "http://localhost:5173",
-  credentials: true,
-  methods: ["GET", "POST", "DELETE", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-};
+import express from "express";
+import cookieParser from "cookie-parser";
+import { getLanguage } from "./middlewares/index.js";
+import { handleErrors } from "./utils/index.js";
+import { authRouter } from "./routers/index.js";
 
 const app = express();
 
-app.use(slowLimiter);
-app.use(rateLimiter);
-app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+//setea el idioma desde donde se consulta
 app.use(getLanguage);
 
 app.use("/auth", authRouter);
-app.use("/profile");
 
-app.use(errorHandler);
+//procesa la response en caso de errores
+app.use(handleErrors);
 
-async function startServer() {
+async function startAPI() {
   try {
     await sequelize.sync({ force: true });
     console.log("DB OK");
-    app.listen(process.env.API_PORT || 3000, () => console.log("API OK"));
+    app.listen(process.env.PORT || 3000, () => console.log("API OK"));
   } catch (error) {
     console.error(error);
     process.exit(1);
   }
 }
 
-startServer();
+startAPI();

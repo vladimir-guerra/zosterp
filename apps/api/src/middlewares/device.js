@@ -1,6 +1,6 @@
 import { UAParser } from "ua-parser-js";
 
-export const getDevice = async (req, _res, next) => {
+export default async function getDevice(req, _res, next) {
   try {
     const uaResult = new UAParser(req.headers["user-agent"]).getResult();
     const device = uaResult
@@ -8,8 +8,8 @@ export const getDevice = async (req, _res, next) => {
       : "Unkwon";
 
     req.device = device;
-    return next();
+    next();
   } catch (error) {
-    return next(error);
+    next(error);
   }
-};
+}
