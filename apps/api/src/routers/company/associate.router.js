@@ -20,7 +20,11 @@ associateRouter.get(
   checkRole(A.R, R.ASSOC),
   getAll(Associate, (req) => ({
     where: { taskId: req.taskId, userId: { [Op.ne]: req.userId } },
-    include: { model: Role, where: { companyId: req.companyId } },
+    include: {
+      model: Role,
+      where: { companyId: req.companyId },
+      required: true,
+    },
   })),
 );
 
