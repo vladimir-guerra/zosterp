@@ -1,4 +1,3 @@
-import { languages } from "@repo/locales";
 import { sequelize } from "../config.js";
 import { DataTypes, Op } from "sequelize";
 import { compare, hash } from "bcrypt";
@@ -27,10 +26,6 @@ export const User = sequelize.define(
     has_2fa: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
-    },
-    language: {
-      type: DataTypes.ENUM(...languages),
-      defaultValue: languages[0],
     },
     isValid: {
       type: DataTypes.BOOLEAN,
@@ -63,15 +58,32 @@ User.prototype.checkPassword = async function (password) {
   return await compare(password, this.passwordHash);
 };
 
-/**
- * Limpia usuarios no validados hace 5 minutos
- */
-async function cleanUsers() {
-  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-  await User.destroy({
-    where: {
-      isValid: false,
-      createdAt: { [Op.lt]: fiveMinutesAgo },
+export const Token = sequelize.define(
+  "Token",
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
     },
-  });
-}
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      unique: "uq_token",
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+    device: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: "uq_token",
+    },
+  },
+  {
+    timestamps: true,
+    underscored: true,
+    indexes: [{ unique: true, fields: ["user_id", "device"] }],
+  },
+);

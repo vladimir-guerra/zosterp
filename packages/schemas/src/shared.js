@@ -1,12 +1,16 @@
 import { z } from "zod";
 
-export const str = z.string({ error: "str.invalid" }).trim();
-export const requiredStr = str.min(1, { error: "str.required" });
+export const str = z.string({ error: "Valor inválido" }).trim();
+export const requiredStr = str.min(1, { error: "Campo obligatorio" });
+export const requiredUuid = z
+  .uuid({ error: "UUID inválida" })
+  .min(1, { error: "UUID requerida" });
 
-export const email = z.email({ error: "email.invalid" });
-export const requiredEmail = email.min(1, { error: "email.required" });
+export const requiredEmail = z
+  .email({ error: "Email inválido" })
+  .min(1, { error: "Email obligatorio" });
 
-export const bool = z.boolean({ error: "bool_invalid" });
+export const bool = z.boolean({ error: "Bool inválido" });
 
 export const validateData = (schema, data) => {
   const r = schema.safeParse(data);

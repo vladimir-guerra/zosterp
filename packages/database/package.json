@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@repo/locales": "workspace:^",
+    "@repo/enums": "workspace:^",
     "bcrypt": "^6.0.0",
     "sequelize": "^6.37.8"
   },

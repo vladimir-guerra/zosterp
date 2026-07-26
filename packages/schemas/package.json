@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@repo/locales": "workspace:^",
+    "@repo/enums": "workspace:^",
     "zod": "^4.4.3"
   }
 }
