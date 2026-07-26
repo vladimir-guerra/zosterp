@@ -1,7 +1,7 @@
 import express from "express";
 import { checkRole, validate } from "../../middlewares/index.js";
 import { ACTION as A, RESOURCE as R } from "@repo/enums";
-import { get, getAll, remove } from "../../controllers/index.js";
+import { create, get, getAll, remove } from "../../controllers/index.js";
 import { Associate, Role, Task } from "@repo/database";
 
 export const taskRouter = express.Router({ mergeParams: true });
@@ -34,4 +34,11 @@ taskRouter.get(
   get(Task, { include: { model: Task } }),
 );
 
-taskRouter.post("/", checkRole(A.C, R.TASK));
+taskRouter.post(
+  "/",
+  checkRole(A.C, R.TASK),
+  validate(),
+  create(Task, (req) => ({ where: req.data })),
+);
+
+taskRouter.delete("/:taskId", checkRole(A.D, R.TASK), remove(Task));
