@@ -48,12 +48,16 @@ export const renewEmail = (Model) => {
 export const get = (Model, options = {}) => {
   return base(async (req, res, next) => {
     let record;
-    if (!options?.where) {
+
+    const resolvedOptions =
+      typeof options === "function" ? options(req) : options;
+
+    if (!resolvedOptions?.where) {
       const key = `${Model.name.toLowerCase()}Id`;
       const id = req.params[key] || req[key];
       if (!id) throw sendError(400, "Identificador no proporcionado");
-      record = await Model.findByPk(id, { plain: true, ...options });
-    } else record = await Model.findOne({ plain: true, ...options });
+      record = await Model.findByPk(id, { plain: true, ...resolvedOptions });
+    } else record = await Model.findOne({ plain: true, ...resolvedOptions });
     if (!record) throw sendError(404, `${Model.name} no encontrado`);
     return res.status(200).json({ record });
   });
@@ -117,5 +121,31 @@ export const remove = (Model, options = {}) => {
     if (!deleted) throw sendError(404, "Recurso no encontrado");
 
     return res.sendStatus(200);
+  });
+};
+
+/**
+ * Endpoint para crear o encontrar un registro de un recurso.
+ * @param {object} Model - Modelo sequelize para realizar la operación.
+ * @param {object|Function} [options={}] - Opciones para la búsqueda/creación o función que las retorna.
+ * @param {Function} [ifCreated=(record)=>{}] - Callback opcional que se ejecuta si el registro fue creado.
+ * @returns {Function} Middleware de Express.
+ */
+export const create = (Model, options = {}, ifCreated = (record) => {}) => {
+  return base(async (req, res, next) => {
+    const resolvedOptions =
+      typeof options === "function" ? options(req) : options;
+    const queryOptions = {
+      ...resolvedOptions,
+      defaults: resolvedOptions.defaults || resolvedOptions.where,
+      plain: true,
+    };
+    
+    const [record, created] = await Model.findOrCreate(queryOptions);
+    if (!record) throw sendError(404, "Recurso no encontrado.");
+    if (created && typeof ifCreated === "function") await ifCreated(record);
+    const status = created ? 201 : 200;
+
+    return res.status(status).json({ record, created });
   });
 };
