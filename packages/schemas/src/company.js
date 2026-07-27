@@ -14,3 +14,8 @@ export const associateInput = z.object({
   email,
   role: requiredStr,
 });
+
+
+export const taskInput = z.object({
+  
+})

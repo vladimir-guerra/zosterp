@@ -140,12 +140,22 @@ export const create = (Model, options = {}, ifCreated = (record) => {}) => {
       defaults: resolvedOptions.defaults || resolvedOptions.where,
       plain: true,
     };
-    
+
     const [record, created] = await Model.findOrCreate(queryOptions);
     if (!record) throw sendError(404, "Recurso no encontrado.");
     if (created && typeof ifCreated === "function") await ifCreated(record);
     const status = created ? 201 : 200;
 
     return res.status(status).json({ record, created });
+  });
+};
+
+export const update = (Model, values = {}, options = {}) => {
+  return base(async (req, res, next) => {
+    const resolvedOptions =
+      typeof options === "function" ? options(req) : options;
+    const resolvedValues = typeof values === "function" ? values(req) : values;
+    const record = await Model.update(values, options);
+    return res.status(200).json({ record });
   });
 };

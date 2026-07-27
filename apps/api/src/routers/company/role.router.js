@@ -3,7 +3,13 @@ import { checkRole, validate } from "../../middlewares/index.js";
 import { roleInput, permissionInput } from "@repo/schemas";
 import { RESOURCE as R, ACTION as A } from "@repo/enums";
 import { Permission, Role } from "@repo/database";
-import { create, get, getAll, remove } from "../../controllers/index.js";
+import {
+  create,
+  get,
+  getAll,
+  remove,
+  update,
+} from "../../controllers/index.js";
 
 export const roleRouter = express.Router({ mergeParams: true });
 
@@ -22,7 +28,16 @@ roleRouter.post(
   })),
 );
 roleRouter.get("/:roleId", checkRole(A.R, R.ROLE), get(Role));
-// roleRouter.patch("/:roleId", checkRole(A.U, R.ROLE), validate(roleInput));
+roleRouter.patch(
+  "/:roleId",
+  checkRole(A.U, R.ROLE),
+  validate(roleInput),
+  update(
+    Role,
+    (req) => req.data,
+    (req) => ({ where: { id: req.params.roleId } }),
+  ),
+);
 roleRouter.delete("/:roleId", checkRole(A.D, R.ROLE), remove(Role));
 
 roleRouter.get(
