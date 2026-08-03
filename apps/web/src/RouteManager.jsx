@@ -60,9 +60,10 @@ export const routes = createBrowserRouter([
         children: [
           setRoute({
             path: "tasks",
-            indexElement: "./pages/Company/Task",
+            indexElement: "./pages/Company/Task/TaskDashboard",
             children: [
-              { path: "*", lazy: lazyElement("./pages/Company/Task") },
+              { path: "new", lazy: lazyElement("./pages/Company/Task/TaskForm") },
+              { path: "*", lazy: lazyElement("./pages/Company/Task/TaskDashboard") },
             ],
           }),
           {

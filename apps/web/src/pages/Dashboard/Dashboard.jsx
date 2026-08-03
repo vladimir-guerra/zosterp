@@ -28,17 +28,15 @@ function CompanyForm({ setCreated }) {
     <Paper
       elevation={3}
       sx={{
-        p: { xs: 3, md: 4 }, // Padding adaptable: 3 en móviles, 4 en pantallas más grandes
+        p: { xs: 3, md: 4 },
         borderRadius: 2,
         width: '100%',
-        maxWidth: 500, // Evita que el formulario se estire demasiado en pantallas gigantes
-        mx: 'auto', // Lo centra horizontalmente si está en un contenedor amplio
+        maxWidth: 500,
+        mx: 'auto',
         mt: 2
       }}
     >
       <Form schema={companySchema} handler={handleSubmit}>
-
-        {/* Encabezado del Formulario */}
         <Box sx={{ mb: 2 }}>
           <Typography variant="h5" component="h2" color="primary.main" fontWeight="bold">
             {t("Create company")}
@@ -50,7 +48,6 @@ function CompanyForm({ setCreated }) {
 
         <Divider sx={{ mb: 3 }} />
 
-        {/* Contenedor de Inputs */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           <Input name={"socialReason"} label={t("Social Reason")} />
           <Input name={"commercialName"} label={t("Commercial Name")} />
@@ -81,30 +78,42 @@ export default function Dashboard() {
   useEffect(() => {
     if (deletedId) {
       setCompanies((prev) => prev.filter((c) => c.id !== deletedId));
-      setDeleted(null);
+      setDeletedId(null); 
     }
   }, [deletedId]);
+
+  // Nueva función para actualizar una empresa desde la tarjeta
+  const handleUpdateCompany = (updatedCompany) => {
+    setCompanies((prev) => 
+      prev.map((c) => (c.id === updatedCompany.id ? updatedCompany : c))
+    );
+  };
 
   return (
     <>
       {(creating && <CompanyForm setCreated={setCreated} />)}
       <header>
         <nav>
-          {
-            !creating && (
-              <Button onClick={() => setCreating(true)} variant="text" sx={{ m: 3 }}>
-                {t("add company")}
-              </Button>
-            )
-          }
+          {!creating && (
+            <Button onClick={() => setCreating(true)} variant="text" sx={{ m: 3 }}>
+              {t("add company")}
+            </Button>
+          )}
         </nav>
       </header>
       <main>
-        {companies ? (
+        {companies.length > 0 ? ( 
           <Grid container spacing={9} sx={{ m: 10 }}>
             {companies.map((c) => (
-              <Card id={c.id} setDeleted={setDeletedId} sx={{ height: '100%'}}>
-                <Link to={`/erp/${c.id}`}>
+              <Card 
+                key={c.id} 
+                id={c.id} 
+                setDeleted={setDeletedId} 
+                companyData={c} // Pasamos la data de la empresa
+                onUpdate={handleUpdateCompany} // Pasamos la función para actualizar
+                sx={{ height: '100%'}}
+              >
+                <Link to={`/erp/${c.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <h1>{c.socialReason}</h1>
                   <ul>
                     <li>{c.commercialName}</li>
