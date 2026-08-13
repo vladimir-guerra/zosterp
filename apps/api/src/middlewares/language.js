@@ -1,6 +1,6 @@
 import { languages } from "@repo/locales";
 
-export const getLanguage = async (req, _res, next) => {
+export const getLanguage = async (req, res, next) => {
   try {
     if (req.cookies.language) {
       req.language = req.cookies.language;

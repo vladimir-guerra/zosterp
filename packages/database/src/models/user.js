@@ -1,5 +1,5 @@
 import { DataTypes, Op } from "sequelize";
-import { sequelize } from "../index";
+import { sequelize } from "../index.js";
 import { languages } from "@repo/locales";
 import { hash, compare, genSalt } from "bcrypt";
 
@@ -103,5 +103,5 @@ export const Token = sequelize.define(
 );
 
 User.prototype.comparePassword = async function (password) {
-  return await compare(password, this.password_hash);
+  return await compare(password, this.passwordHash);
 };

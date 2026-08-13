@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../index";
+import { sequelize } from "../connection.js";
 
 export const Assignment = sequelize.define(
   "Assignment",
@@ -78,14 +78,15 @@ export const Permission = sequelize.define(
         key: "id",
         model: "roles",
       },
+      type: DataTypes.UUID
     },
     action: {
-        primaryKey: true,
-      type: DataTypes.ENUM(...[0, 1, 2, 3]) /*C R U D*/,
+      primaryKey: true,
+      type: DataTypes.ENUM(...["0", "1", "2", "3"]) /*C R U D*/,
     },
     resource: {
-        primaryKey: true,
-        type: DataTypes.ENUM(...[""]) /*tablas*/
+      primaryKey: true,
+      type: DataTypes.ENUM("company", "user", "task", "assignment", "transaction", "timesheet") /*tablas*/
     }
   },
   { underscored: true },

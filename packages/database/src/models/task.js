@@ -1,5 +1,5 @@
 import { DataTypes, Op } from "sequelize";
-import { sequelize } from "../index";
+import { sequelize } from "../connection.js";
 
 const updateParentProgress = async (parentId) => {
   if (!parentId) return;
@@ -80,14 +80,12 @@ export const Task = sequelize.define(
     paranoid: true,
     underscored: true,
     hooks: {
-      hooks: {
         afterSave: async (task) => {
           if (task.parentId) await updateParentProgress(task.parentId);
         },
         afterDestroy: async (task) => {
           if (task.parentId) await updateParentProgress(task.parentId);
         },
-      },
     },
   },
 );

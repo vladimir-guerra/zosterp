@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { getDevice, validate } from "../middlewares";
-import { emailSchema, insertUserSchema, loginSchema } from "@repo/schemas";
-import { generateTokens } from "../utils";
+import {validate}  from "../middlewares/index.js";
+import {getDevice} from "../middlewares/device.js";
+import { isAuth } from "../middlewares/index.js";
+import { emailSchema, insertUserSchema, loginSchema, recoverPasswordSchema } from "@repo/schemas";
+import { generateTokens } from "../utils/index.js";
 import {
   login,
   logout,
@@ -11,10 +13,12 @@ import {
   requestNewPassword,
   TwoFA,
   validateUser,
-  verify,
-} from "../endpoints";
+  me
+} from "../endpoints/index.js";
 
 export const authRouter = Router();
+
+authRouter.get("/me", isAuth, me)
 
 authRouter.post(
   "/login",
@@ -36,14 +40,15 @@ authRouter.post(
   generateTokens,
 );
 
-authRouter.post("/2FA", validate(twoFaSchema), TwoFA, generateTokens);
-authRouter.post(
-  "/register/validate",
-  validate(tokenSchema),
-  validateUser,
-  generateTokens,
-);
+//esquemas no existentes (twoFaSchema) && (tokenSchema)
+// authRouter.post("/2FA", validate(twoFaSchema), TwoFA, generateTokens);
+// authRouter.post(
+//   "/register/validate",
+//   validate(tokenSchema),
+//   validateUser,
+//   generateTokens,
+// );
 authRouter.get("/refresh", refresh, generateTokens);
 authRouter.get("/logout", logout);
-authRouter.post("/password", validate(emailSchema), requestNewPassword);
-authRouter.patch("/password", validate(renewPasswordSchema), renewPassword);
+authRouter.post("/password", validate(recoverPasswordSchema), requestNewPassword);
+authRouter.patch("/password", renewPassword);

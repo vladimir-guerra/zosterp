@@ -1,4 +1,5 @@
-import { Sequelize } from "sequelize";
+// 1. Re-exportamos la conexión ya inicializada
+export { sequelize } from "./connection.js";
 
-export const sequelize = new Sequelize("sqlite::memory");
-export * from "./models"
+// 2. Exportamos TODOS los modelos y relaciones que ya armaste
+export * from "./models/index.js";

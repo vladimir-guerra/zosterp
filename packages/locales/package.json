@@ -1,6 +1,7 @@
 {
   "name": "@repo/locales",
   "version": "1.0.0",
+  "type":"module",
   "description": "",
   "private": true,
   "main": "index.js",

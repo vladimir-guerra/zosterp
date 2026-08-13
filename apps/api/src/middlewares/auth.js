@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import createError from "http-errors";
 
 export const isAuth = async (req, _res, next) => {

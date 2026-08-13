@@ -1,10 +1,10 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form, Input } from "../../components";
 import { loginSchema } from "@repo/schemas";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
-
-import { Box, AppBar, Toolbar, Typography, Paper } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import { Box, AppBar, Toolbar, Typography, Paper, Alert, Button } from "@mui/material";
 import { useAuth } from "../../providers";
 
 export default function Login() {
@@ -12,11 +12,21 @@ export default function Login() {
   const { t } = useTranslation("web");
   const date = new Date();
   const Year = `${date.getFullYear()}`;
+  const navigate = useNavigate();
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  const handleSubmit = (data) => { login(data); };
+  const handleSubmit = async (data) => {
+    try {
+      setErrorMsg(null);
+      await login(data);
+      navigate("/erp");
+    } catch (error) {
+      setErrorMsg(error.message);
+      throw error
+    }
+  };
 
   return (
-    // Contenedor principal: Ocupa toda la pantalla y organiza los elementos en columna
     <Box
       sx={{
         display: "flex",
@@ -25,7 +35,6 @@ export default function Login() {
         bgcolor: "grey.50",
       }}
     >
-      {/* --- HEADER --- */}
       <AppBar
         position="static"
         elevation={0}
@@ -51,39 +60,41 @@ export default function Login() {
         </Toolbar>
       </AppBar>
 
-      {/* --- CONTENIDO PRINCIPAL (Formulario centrado) --- */}
       <Box
         component="main"
         sx={{
-          flexGrow: 1, // Esto empuja el footer hacia abajo
+          flexGrow: 1,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           p: 2,
         }}
       >
-        {/* Tarjeta blanca con sombra que envuelve tu formulario */}
         <Paper
           elevation={3}
           sx={{ p: 4, width: "100%", maxWidth: 400, borderRadius: 2 }}
         >
+          <Typography
+            variant="h4"
+            align="center"
+            fontWeight="bold"
+            gutterBottom
+            sx={{ mb: 3 }}
+          >
+            {t("Login")}
+          </Typography>
+
+          {errorMsg && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {errorMsg}
+            </Alert>
+          )}
+
           <Form schema={loginSchema} handler={handleSubmit}>
-            {/* Reemplazamos el <h1> puro por Typography para respetar el diseño de MUI */}
-            <Typography
-              variant="h4"
-              align="center"
-              fontWeight="bold"
-              gutterBottom
-              sx={{ mb: 3 }}
-            >
-              {t("Login")}
-            </Typography>
-
             <Input name={"email"} />
-            <Input name={"password"} />
-
+            <Input name={"password"} type="password" />
           </Form>
-        {/* Contenedor flexible para ordenar y estilizar un poco los links de React Router */}
+
           <Box
             sx={{
               display: "flex",
@@ -117,7 +128,6 @@ export default function Login() {
         </Paper>
       </Box>
 
-      {/* --- FOOTER --- */}
       <Box
         component="footer"
         sx={{

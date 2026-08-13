@@ -10,7 +10,8 @@ import {
 } from "@mui/material";
 
 export default function Profile() {
-  const { logout } = useAuth();
+  // 💡 ¡MAGIA! Extraemos 'user' directamente del contexto global
+  const { user, logout } = useAuth(); 
   const { t } = useTranslation();
 
   return (
@@ -24,7 +25,7 @@ export default function Profile() {
           borderRadius: 2,
           display: 'flex',
           flexDirection: 'column',
-          gap: 3 // Espaciado uniforme entre los elementos
+          gap: 3 
         }}
       >
         {/* Cabecera del apartado */}
@@ -39,14 +40,30 @@ export default function Profile() {
 
         <Divider />
 
-        {/* Campos del formulario */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <TextField label={t("name", "Nombre")} variant="outlined" fullWidth disabled />
-          <TextField label={t("email", "Email")} variant="outlined" fullWidth disabled />
-          <TextField label={t("phone", "Teléfono")} variant="outlined" fullWidth disabled />
+          <TextField 
+            label={t("name", "Nombre")} 
+            variant="outlined" 
+            fullWidth 
+            disabled 
+            value={user?.name ? `${user.name} ${user.surname || ''}` : ""} 
+          />
+          <TextField 
+            label={t("email", "Email")} 
+            variant="outlined" 
+            fullWidth 
+            disabled 
+            value={user?.email || ""} 
+          />
+          <TextField 
+            label={t("phone", "Teléfono")} 
+            variant="outlined" 
+            fullWidth 
+            disabled 
+            value={user?.phone || "No registrado"} 
+          />
         </Box>
 
-        {/* Botón de acción */}
         <Box sx={{ mt: 2 }}>
           <Button 
             onClick={() => logout()} 

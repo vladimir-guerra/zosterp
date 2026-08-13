@@ -1,3 +1,3 @@
-export { default as getLocale } from "./locales";
-export { default as generateTokens } from "./auth";
-export { default as errorHandler } from "./error";
+export { default as getLocale } from "./locales.js";
+export { default as generateTokens } from "./auth.js";
+export { default as errorHandler } from "./error.js";

@@ -1,25 +1,33 @@
-import { User, Token } from "@repo/database";
+import { User, Token } from "@repo/database/src/models/user.js";
 import createError from "http-errors";
 import { randomInt } from "crypto";
 import { sendMail } from "@repo/email";
-import { getLocale } from "../utils";
+import getLocales from "../utils/locales.js";
 import jwt from "jsonwebtoken";
 
 const loginHandler = async (req, res, recordUser) => {
-  const isValid = await recordUser?.comparePassword(req.data.password);
-  if (!isValid) throw createError(400, "invalid_credentials");
+  if (!recordUser) {
+    throw createError(400, "invalid_credentials");
+  }
+
+  const isValid = await recordUser.comparePassword(req.data.password);
+
+  if (!isValid) {
+    throw createError(400, "invalid_credentials");
+  }
 
   const { passwordHash, ...user } = recordUser.get({ plain: true });
+
   if (user.has_2fa) {
     const code = randomInt(100000).toString().padStart(6, "0");
-
     const SECRET = process.env.JWT_2FA_SECRET;
     const { device } = req;
+
     const token = jwt.sign({ userId: user.id, code, device }, SECRET, {
       expiresIn: "5m",
     });
 
-    const locale = await getLocale(user.language);
+    const locale = await getLocales(user.language);
     const { url } = await sendMail({
       to: user.email,
       subject: locale["TwoFA"],
@@ -30,6 +38,28 @@ const loginHandler = async (req, res, recordUser) => {
   }
   req.user = user;
   return true;
+};
+
+export const me = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await User.findByPk(userId, {
+      attributes: { exclude: ['password', 'twoFactorCode'] }
+    });
+
+    if (!result) {
+      throw createError(404, "not_user_found");
+    }
+
+    return res.status(200).json({
+      error: false,
+      user: result
+    });
+
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const login = async (req, res, next) => {
@@ -44,48 +74,66 @@ export const login = async (req, res, next) => {
 
 export const register = async (req, res, next) => {
   try {
-    const { email } = req.data;
+    const { confirmPassword, ...cleanUserData } = req.data;
+    const { email } = cleanUserData;
     const [findOrCreatedUser, created] = await User.unscoped().findOrCreate({
       where: { email },
-      defaults: req.data,
-      plain: true,
+      defaults: cleanUserData,
     });
 
     if (created) {
-      const { passwordHash, ...user } = findOrCreatedUser;
-      const locale = await getLocale(user.language);
+      const userObj = findOrCreatedUser.toJSON();
+
+      const { passwordHash, ...user } = userObj;
+
+      const locale = await getLocales(user.language);
       const SECRET = process.env.JWT_REGISTER_USER_SECRET;
-      const { device } = req;
+
+      const { device = "unknown" } = req;
+
       const token = jwt.sign({ userId: user.id, device }, SECRET, {
         expiresIn: "5m",
       });
+
       const { url } = await sendMail({
         to: email,
         subject: locale["register"],
         html: `<a href=?token=${token}>${locale["activate-account"]}</a>`,
       });
+
       return res.status(201).json({ url });
-      //return res.sendStatus(201)
-    } else if (await loginHandler(req, res, findOrCreatedUser)) next();
+    } else if (await loginHandler(req, res, findOrCreatedUser)) {
+      next();
+    }
   } catch (error) {
+    console.error("Error en el registro:", error);
     next(error);
   }
 };
 
 export const TwoFA = async (req, res, next) => {
   try {
-    const { token, code } = req.data;
+    const { token, code } = req.body;
     const SECRET = process.env.JWT_2FA_SECRET;
-    const { code: DCode, userId, device } = jwt.verify(token, SECRET);
 
-    if (DCode !== code) throw createError(400, "invalid_code");
+    const { userId, device } = jwt.verify(token, SECRET);
 
     const foundUser = await User.findByPk(userId, { plain: true });
-    if (!foundUser) throw createError(404, "not_user_found");
+
+    if (!foundUser) {
+      throw createError(404, "not_user_found");
+    }
+
+    if (foundUser.twoFactorCode !== code) {
+      throw createError(400, "invalid_code");
+    }
+
+    await User.update({ twoFactorCode: null }, { where: { id: userId } });
 
     req.user = foundUser;
     req.device = device;
     next();
+
   } catch (error) {
     next(error);
   }
@@ -93,7 +141,7 @@ export const TwoFA = async (req, res, next) => {
 
 export const validateUser = async (req, res, next) => {
   try {
-    const { token } = req.data;
+    const { token } = req.body;
     const SECRET = process.env.JWT_REGISTER_USER_SECRET;
     const { userId, device } = jwt.verify(token, SECRET);
 
@@ -158,7 +206,7 @@ export const logout = async (req, res, next) => {
 
 export const requestNewPassword = async (req, res, next) => {
   try {
-    const { email } = req.data;
+    const { email } = req.body;
     const { id, language } = await User.findOne({
       where: { email },
       plain: true,
@@ -168,7 +216,7 @@ export const requestNewPassword = async (req, res, next) => {
     const SECRET = process.env.JWT_RENEW_PASSWORD_SECRET;
     const token = jwt.sign({ userId: id }, SECRET, { expiresIn: "10m" });
 
-    const locale = await getLocale(language);
+    const locale = await getLocales(language);
     const { url } = await sendMail({
       to: email,
       subject: locale["recover-password"],
@@ -181,9 +229,9 @@ export const requestNewPassword = async (req, res, next) => {
   }
 };
 
-export const renewPassword = async (params) => {
+export const renewPassword = async (req, res, next) => {
   try {
-    const { password, token } = req.data;
+    const { password, token } = req.body;
     const SECRET = process.env.JWT_RENEW_PASSWORD_SECRET;
     const { userId: id } = jwt.verify(token, SECRET);
     await User.update({ password }, { where: { id } });
@@ -191,4 +239,5 @@ export const renewPassword = async (params) => {
   } catch (error) {
     next(error);
   }
+
 };

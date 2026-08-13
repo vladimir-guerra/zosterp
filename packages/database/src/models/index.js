@@ -1,9 +1,10 @@
-import { User, Token } from "./user";
-import { Company, Associate } from "./company";
-import { Task } from "./task";
-import { Assignment, Role, Permission } from "./assignment";
-import { Timesheet } from "./timesheet";
-import { Transaction } from "./transaction";
+import { sequelize } from "../connection.js";
+import {User, Token } from "./user.js";
+import { Company, Associate } from "./company.js";
+import { Task } from "./task.js";
+import { Assignment, Role, Permission } from "./assignment.js";
+import { Timesheet } from "./timesheet.js";
+import { Transaction } from "./transaction.js";
 
 // --- Relaciones de Usuario ---
 User.hasMany(Token, { foreignKey: "userId" });

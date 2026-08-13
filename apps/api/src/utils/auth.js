@@ -1,10 +1,13 @@
 import jwt from "jsonwebtoken";
-import { Token } from "@repo/database";
+import { Token } from "@repo/database/src/models/user.js";
 import createError from "http-errors";
 
 export default async function generateTokens(req, res, next) {
   try {
-    const { userId, language, device } = req;
+    const { user, language, device } = req;
+
+    const userId = user.id
+
     const { id: tokenId } = (await Token.create({ userId, device })).dataValues;
 
     const refreshToken = jwt.sign({ tokenId }, process.env.JWT_REFRESH_SECRET, {

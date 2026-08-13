@@ -1,10 +1,14 @@
-import "safe-dotenv/config";
+import "dotenv/config"
 import cookieParser from "cookie-parser";
 import express from "express";
 import { sequelize } from "@repo/database";
-import { getLanguage } from "./middlewares";
-import { errorHandler } from "./handlers";
-import { authRouter } from "./routers";
+import { getLanguage } from "./middlewares/index.js";
+import { errorHandler } from "./utils/index.js";
+import { authRouter } from "./routers/index.js";
+import {rateLimit} from "express-rate-limit"
+import {slowDown} from 'express-slow-down'
+import cors from 'cors'
+
 
 const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -37,13 +41,13 @@ app.use(cookieParser());
 app.use(getLanguage);
 
 app.use("/auth", authRouter);
-app.use("/profile");
+app.use("/profile", authRouter);
 
 app.use(errorHandler);
 
 async function startServer() {
   try {
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ alter: true, force: true});
     console.log("DB OK");
     app.listen(process.env.API_PORT || 3000, () => console.log("API OK"));
   } catch (error) {
