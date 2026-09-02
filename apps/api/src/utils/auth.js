@@ -5,8 +5,7 @@ import createError from "http-errors";
 export default async function generateTokens(req, res, next) {
   try {
     const { user, language, device } = req;
-
-    const userId = user.id
+    const userId = user.id;
 
     const { id: tokenId } = (await Token.create({ userId, device })).dataValues;
 
@@ -18,7 +17,7 @@ export default async function generateTokens(req, res, next) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, //7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       path: "/auth/refresh",
     });
 
@@ -26,14 +25,21 @@ export default async function generateTokens(req, res, next) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, //7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    const accessToken = jwt.sign({ userId }, process.env.JWT_ACCESS_SECRET, {
+    const accessToken = jwt.sign({ userId, language }, process.env.JWT_ACCESS_SECRET, {
       expiresIn: "15m",
     });
 
-    return res.status(200).json({ accessToken });
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax", 
+      maxAge: 15 * 60 * 1000, 
+    });
+
+    return res.status(200).json({ message: "Autenticación exitosa" });
   } catch (error) {
     next(error);
   }

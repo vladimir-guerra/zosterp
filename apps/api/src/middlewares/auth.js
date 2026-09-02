@@ -3,16 +3,15 @@ import createError from "http-errors";
 
 export const isAuth = async (req, _res, next) => {
   try {
-    const header = req.headers["authorization"];
-    const token = header?.split(" ")[1];
+    const token = req.cookies.accessToken;
 
-    if (!token) throw createError(404, "not_session");
+    if (!token) throw createError(401, "not_session");
 
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
     } catch (error) {
-      throw createError(400, error);
+      throw createError(401, error);
     }
 
     req.user = { id: decoded.userId };

@@ -5,6 +5,7 @@ import { sequelize } from "@repo/database";
 import { getLanguage } from "./middlewares/index.js";
 import { errorHandler } from "./utils/index.js";
 import { authRouter } from "./routers/index.js";
+import { companyRouter } from "./routers/company.js";
 import {rateLimit} from "express-rate-limit"
 import {slowDown} from 'express-slow-down'
 import cors from 'cors'
@@ -40,6 +41,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(getLanguage);
 
+app.use("/company", companyRouter);
 app.use("/auth", authRouter);
 app.use("/profile", authRouter);
 

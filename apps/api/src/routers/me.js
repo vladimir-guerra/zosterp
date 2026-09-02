@@ -9,6 +9,10 @@ import jwt from "jsonwebtoken";
 
 export const authRouter = Router();
 
+authRouter.patch("/profile", async (req, res) => {
+
+});
+
 authRouter.post("/email", validate(emailSchema), async (req, res, next) => {
   try {
     const { email } = req.data;
@@ -36,3 +40,4 @@ authRouter.patch("/email", validate(emailSchema), async (req, res, next) => {
     next(error);
   }
 });
+
