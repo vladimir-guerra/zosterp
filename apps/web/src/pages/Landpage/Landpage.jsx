@@ -36,7 +36,7 @@ export default function Landpage() {
             component="div"
             sx={{ flexGrow: 1, fontWeight: 'bold', color: 'primary.main' }}
           >
-            soy un logo :v
+            ZostERP
           </Typography>
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button

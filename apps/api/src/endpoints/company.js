@@ -39,7 +39,7 @@ export const createCompany = async (req, res, next) => {
 
 export const createTask = async (req, res, next) => {
   try {
-    const { title, description, startedAt, approximateFinishDate } = req.body;
+    const { title, description, startedAt, approximateFinishDate, parentId } = req.body;
 
     const { companyId } = req.params;
 
@@ -62,7 +62,8 @@ export const createTask = async (req, res, next) => {
       title,
       description,
       startedAt,
-      approximateFinishDate
+      approximateFinishDate,
+      parentId: parentId || null
     });
 
     return res.status(201).json({
@@ -119,7 +120,6 @@ export const getTasks = async (req, res, next) => {
     console.log(JSON.stringify(associates));
 
     const associateIds = associates.map(assoc => assoc.id);
-    console.log(associateIds);
 
     const tasks = await Task.findAll({
       where: { associateId: associateIds }

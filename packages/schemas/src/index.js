@@ -25,8 +25,7 @@ export const companySchema = z.object({
   id: z.uuid().optional(),
   socialReason: z.string().min(1, "SOCIAL_REASON_REQUIRED"),
   commercialName: z.string().min(1, "COMMERCIAL_NAME_REQUIRED"),
-  industry: z.string().min(1, "INDUSTRY_REQUIRED"),
-  email: emailSchema,
+  type: z.string().min(1, "INDUSTRY_REQUIRED"),
 });
 
 export const insertTaskSchema = z.object({

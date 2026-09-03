@@ -46,8 +46,7 @@ export const Task = sequelize.define(
       references: {
         key: "id",
         model: "associates",
-      },
-      unique: "uq_assignments",
+      }
     },
     title: {
       type: DataTypes.STRING,

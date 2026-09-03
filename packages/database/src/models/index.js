@@ -1,5 +1,5 @@
 import { sequelize } from "../connection.js";
-import {User, Token } from "./user.js";
+import { User, Token } from "./user.js";
 import { Company, Associate } from "./company.js";
 import { Task } from "./task.js";
 import { Assignment, Role, Permission } from "./assignment.js";
@@ -24,6 +24,10 @@ Permission.belongsTo(Role, { foreignKey: "roleId" });
 // --- Tareas (Estructura de árbol) ---
 Task.hasMany(Task, { as: "Subtasks", foreignKey: "parentId" });
 Task.belongsTo(Task, { as: "Parent", foreignKey: "parentId" });
+
+// --- Tareas y Asociados ---
+Associate.hasMany(Task, { foreignKey: "associateId" });
+Task.belongsTo(Associate, { foreignKey: "associateId" });
 
 // --- Asignaciones ---
 Associate.hasMany(Assignment, { foreignKey: "associateId" });

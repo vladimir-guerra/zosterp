@@ -5,25 +5,36 @@ import { Card } from "../../components";
 import { companySchema } from "@repo/schemas";
 import { Form, Input } from "../../components";
 import {
-  AppBar,
-  Toolbar,
   Typography,
   Button,
   Box,
-  Container,
-  CardContent,
-  CardMedia,
   Paper,
   Divider,
-  Grid
+  Grid,
+  CircularProgress,
+  AppBar,
+  Toolbar,
+  Avatar,
+  Chip,
+  Stack
 } from "@mui/material";
+import MailOutlineIcon from "@mui/icons-material/MailOutlined";
+import ApartmentIcon from "@mui/icons-material/Apartment";
+import { useCompany } from "../../providers/CompanyProvider";
 
-function CompanyForm({ setCreated }) {
+function CompanyForm({ onClose }) {
   const { t } = useTranslation("web");
-  const handleSubmit = (data) => {
-    data.id = crypto.randomUUID();
-    setCreated(data);
+  const { createCompany, isLoading } = useCompany();
+
+  const handleSubmit = async (data) => {
+    try {
+      await createCompany(data);
+      onClose();
+    } catch (error) {
+      console.error("Error al crear la empresa:", error);
+    }
   };
+
   return (
     <Paper
       elevation={3}
@@ -36,8 +47,8 @@ function CompanyForm({ setCreated }) {
         mt: 2
       }}
     >
-      <Form schema={companySchema} handler={handleSubmit}>
-        <Box sx={{ mb: 2 }}>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <Box>
           <Typography variant="h5" component="h2" color="primary.main" fontWeight="bold">
             {t("Create company")}
           </Typography>
@@ -45,15 +56,15 @@ function CompanyForm({ setCreated }) {
             {t("Complete the next fields to log the information of your enterprise")}
           </Typography>
         </Box>
+      </Box>
 
-        <Divider sx={{ mb: 3 }} />
+      <Divider sx={{ mb: 3 }} />
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      <Form schema={companySchema} handler={handleSubmit}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <Input name={"socialReason"} label={t("Social Reason")} />
           <Input name={"commercialName"} label={t("Commercial Name")} />
-          <Input name={"industry"} label={t("Industry")} />
-          <Input name={"country"} label={t("Country")} />
-          <Input name={"email"} label={t("Email")} />
+          <Input name={"type"} label={t("Industry")} />
         </Box>
       </Form>
     </Paper>
@@ -62,71 +73,113 @@ function CompanyForm({ setCreated }) {
 
 export default function Dashboard() {
   const { t } = useTranslation("web");
-  const [companies, setCompanies] = useState([]);
   const [creating, setCreating] = useState(false);
-  const [created, setCreated] = useState(null);
-  const [deletedId, setDeletedId] = useState(null);
+
+  const {
+    companies,
+    fetchCompanies,
+    isLoading,
+    updateCompany,
+    deleteCompany
+  } = useCompany();
 
   useEffect(() => {
-    if (created) {
-      setCompanies([...companies, created]);
-      setCreated(null);
-      setCreating(false);
-    }
-  }, [created]);
+    fetchCompanies();
+  }, [fetchCompanies]);
 
-  useEffect(() => {
-    if (deletedId) {
-      setCompanies((prev) => prev.filter((c) => c.id !== deletedId));
-      setDeletedId(null); 
-    }
-  }, [deletedId]);
-
-  // Nueva función para actualizar una empresa desde la tarjeta
-  const handleUpdateCompany = (updatedCompany) => {
-    setCompanies((prev) => 
-      prev.map((c) => (c.id === updatedCompany.id ? updatedCompany : c))
-    );
+  const handleUpdateCompany = async (updatedCompany) => {
+    await updateCompany(updatedCompany.id, updatedCompany);
   };
 
   return (
     <>
-      {(creating && <CompanyForm setCreated={setCreated} />)}
-      <header>
-        <nav>
+      {creating && <CompanyForm onClose={() => setCreating(false)} />}
+
+      <AppBar position="static" color="transparent" elevation={0}>
+        <Toolbar component="nav" sx={{ justifyContent: 'start' }}>
           {!creating && (
             <Button onClick={() => setCreating(true)} variant="text" sx={{ m: 3 }}>
               {t("add company")}
             </Button>
           )}
-        </nav>
-      </header>
-      <main>
-        {companies.length > 0 ? ( 
+        </Toolbar>
+      </AppBar>
+
+      <Box component="main">
+        {isLoading && companies.length === 0 ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
+            <CircularProgress />
+          </Box>
+        ) : companies.length > 0 ? (
           <Grid container spacing={9} sx={{ m: 10 }}>
             {companies.map((c) => (
-              <Card 
-                key={c.id} 
-                id={c.id} 
-                setDeleted={setDeletedId} 
-                companyData={c} // Pasamos la data de la empresa
-                onUpdate={handleUpdateCompany} // Pasamos la función para actualizar
-                sx={{ height: '100%'}}
+              <Card
+                key={c.id}
+                id={c.id}
+                setDeleted={() => deleteCompany(c.id)}
+                companyData={c}
+                onUpdate={handleUpdateCompany}
+                sx={{ height: '100%' }}
               >
                 <Link to={`/erp/${c.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <h1>{c.socialReason}</h1>
-                  <ul>
-                    <li>{c.commercialName}</li>
-                    <li>{c.email}</li>
-                  </ul>
+                  <Stack spacing={1.5}>
+                    <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Avatar
+                        sx={{
+                          bgcolor: 'primary.main',
+                          width: 44,
+                          height: 44,
+                          fontWeight: 'bold'
+                        }}
+                      >
+                        {c.socialReason?.charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography
+                          variant="subtitle1"
+                          component="h1"
+                          fontWeight="bold"
+                          noWrap
+                        >
+                          {c.socialReason}
+                        </Typography>
+                        {c.commercialName && (
+                          <Typography variant="body2" color="text.secondary" noWrap>
+                            {c.commercialName}
+                          </Typography>
+                        )}
+                      </Box>
+                    </Stack>
+
+                    {c.type && (
+                      <Chip
+                        icon={<ApartmentIcon />}
+                        label={c.type}
+                        size="small"
+                        variant="outlined"
+                        sx={{ alignSelf: 'flex-start' }}
+                      />
+                    )}
+
+                    {c.email && (
+                      <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
+                        <MailOutlineIcon fontSize="small" />
+                        <Typography variant="body2" noWrap>
+                          {c.email}
+                        </Typography>
+                      </Stack>
+                    )}
+                  </Stack>
                 </Link>
               </Card>
             ))}
           </Grid>
         ) : (
-          <p>{t("no-companies")}</p>
+          <Typography sx={{ m: 10 }}>
+            {t("no-companies")}
+          </Typography>
         )}
-      </main>
+      </Box>
     </>
   );
 }
