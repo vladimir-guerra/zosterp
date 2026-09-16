@@ -117,16 +117,14 @@ export const getTasks = async (req, res, next) => {
     const { companyId } = req.params;
 
     const associates = await Associate.findAll({ where: { companyId }, attributes: ['id'] });
-    console.log(JSON.stringify(associates));
 
     const associateIds = associates.map(assoc => assoc.id);
 
     const tasks = await Task.findAll({
       where: { associateId: associateIds }
     });
-    console.log(JSON.stringify(tasks));
-    
-    
+
+
     res.status(200).json({ message: "Tareas de la empresa obtenidas", data: tasks });
 
   } catch (error) { next(error); }
@@ -215,7 +213,7 @@ export const updateTask = async (req, res, next) => {
     }
 
     const task = await Task.findOne({
-      where: { id: taskId, companyId }
+      where: { id: taskId }
     });
 
     if (!task) {
@@ -252,13 +250,15 @@ export const deleteTask = async (req, res, next) => {
     }
 
     const task = await Task.findOne({
-      where: { id: taskId, companyId }
+      where: { id: taskId }
     });
 
     if (!task) {
       throw createError(404, "Tarea no encontrada en esta empresa");
     }
-    await task.destroy();
+    const taskDestroyed = await task.destroy();
+    console.log(taskDestroyed);
+    
     return res.status(200).json({
       message: "Tarea eliminada exitosamente"
     });

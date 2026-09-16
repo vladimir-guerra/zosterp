@@ -59,19 +59,17 @@ export default function Landpage() {
         </Toolbar>
       </AppBar>
 
-      {/* --- HERO SECTION (Fondo estático con imagen) --- */}
       <Box
         sx={{
           position: 'relative',
-          backgroundImage: `url(${img_background})`, // Asegúrate de tener esta imagen en la carpeta public o ajusta la ruta según corresponda
+          backgroundImage: `url(${img_background})`, 
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundAttachment: 'fixed', // Esto hace que la imagen se quede estática al hacer scroll
+          backgroundAttachment: 'fixed', 
           color: 'white',
           py: { xs: 12, md: 20 },
           textAlign: 'center',
           '&::before': {
-            // Capa superpuesta azul para mejorar la lectura del texto
             content: '""',
             position: 'absolute',
             top: 0,
@@ -93,10 +91,8 @@ export default function Landpage() {
         </Container>
       </Box>
 
-      {/* --- CONTENIDO PRINCIPAL --- */}
       <Box component="main" sx={{ py: 10 }}>
 
-        {/* --- SECCIÓN DE CARACTERÍSTICAS --- */}
         <Container>
           <Box textAlign="center" mb={8}>
             <Typography variant="h3" component="h2" color="primary.dark" gutterBottom sx={{ textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>
@@ -121,9 +117,9 @@ export default function Landpage() {
                 key={feature.id}
                 elevation={0}
                 sx={{
-                  flex: 1, // Obliga a que todas las tarjetas tengan exactamente el mismo ancho
-                  maxWidth: '240px', // Reduce el tamaño máximo ~20%
-                  minWidth: '180px', // Límite para que el texto no se apelmace al achicar la ventana
+                  flex: 1, 
+                  maxWidth: '240px', 
+                  minWidth: '180px', 
                   border: '1px solid',
                   borderColor: 'grey.200',
                   display: 'flex',
@@ -141,7 +137,6 @@ export default function Landpage() {
                   
                 />
                 <CardContent sx={{ flexGrow: 1, p: 2 }}>
-                  {/* Tamaños de fuente ligeramente ajustados para la carta reducida */}
                   <Typography variant="h6" color="primary.main" fontWeight="bold" gutterBottom sx={{ fontSize: '1.1rem' }}>
                     {feature.title}
                   </Typography>
@@ -154,7 +149,6 @@ export default function Landpage() {
           </Box>
         </Container>
 
-        {/* SECCIÓN DE BENEFICIOS ADICIONALES */}
         <Box sx={{ bgcolor: 'primary.50', py: 8, mt: 10 }}>
           <Container>
             <Typography variant="h4" sx={{mb: 5}}>Ventajas al usar nuestro ERP</Typography>
@@ -166,7 +160,6 @@ export default function Landpage() {
 
       </Box>
 
-      {/* --- FOOTER --- */}
       <Box
         component="footer"
         sx={{

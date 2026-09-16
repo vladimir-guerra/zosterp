@@ -15,7 +15,7 @@ companyRouter.get("/:companyId/tasks", getTasks);
 companyRouter.get("/:companyId/tasks/assignments", getTaskAssignments);
 
 companyRouter.patch("/:companyId", updateCompany);
-companyRouter.patch("/:companyId/:taskId", updateTask);
+companyRouter.patch("/:companyId/tasks/:taskId", updateTask);
 
 companyRouter.delete("/:companyId", deleteCompany);
-companyRouter.delete("/:companyId/:taskId", deleteTask);
+companyRouter.delete("/:companyId/tasks/:taskId", deleteTask);

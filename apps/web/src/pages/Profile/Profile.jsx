@@ -34,7 +34,7 @@ export default function Profile() {
             {t("profile", "Mi Perfil")}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            {t("profile-desc", "Gestiona tu información personal")}
+            {t("profile-desc", "Información del usuario")}
           </Typography>
         </Box>
 
@@ -46,21 +46,21 @@ export default function Profile() {
             variant="outlined" 
             fullWidth 
             disabled 
-            value={user?.name ? `${user.name} ${user.surname || ''}` : ""} 
+            value={user?.name} 
+          />
+          <TextField 
+            label={t("surname", "Apellido")} 
+            variant="outlined" 
+            fullWidth 
+            disabled 
+            value={user?.surname || ""} 
           />
           <TextField 
             label={t("email", "Email")} 
             variant="outlined" 
             fullWidth 
             disabled 
-            value={user?.email || ""} 
-          />
-          <TextField 
-            label={t("phone", "Teléfono")} 
-            variant="outlined" 
-            fullWidth 
-            disabled 
-            value={user?.phone || "No registrado"} 
+            value={user?.email || "No registrado"} 
           />
         </Box>
 

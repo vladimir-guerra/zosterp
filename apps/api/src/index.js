@@ -6,10 +6,10 @@ import { getLanguage } from "./middlewares/index.js";
 import { errorHandler } from "./utils/index.js";
 import { authRouter } from "./routers/index.js";
 import { companyRouter } from "./routers/company.js";
-import {rateLimit} from "express-rate-limit"
-import {slowDown} from 'express-slow-down'
+import { rateLimit } from "express-rate-limit"
+import { slowDown } from 'express-slow-down'
 import cors from 'cors'
-
+import { Role, Permission } from "@repo/database";
 
 const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -49,7 +49,26 @@ app.use(errorHandler);
 
 async function startServer() {
   try {
-    await sequelize.sync({ alter: true, force: true});
+    await sequelize.sync({ alter: true, force: false });
+
+    // insercion de roles y permisos
+    const [owner] = await Role.findOrCreate({ where: { name: 'owner' } });
+    const [adminTask] = await Role.findOrCreate({ where: { name: 'adminTask' }, defaults: { parentId: owner.id } });
+    const [associate] = await Role.findOrCreate({ where: { name: 'associate' }, defaults: { parentId: adminTask.id } });
+
+    await Permission.findOrCreate({
+      where: { roleId: owner.id, },
+      defaults: { action: ['0', '1', '2', '3'], resource: ['company', 'task', 'assignment', 'timesheet'] }
+    });
+    await Permission.findOrCreate({
+      where: { roleId: adminTask.id, },
+      defaults: { action: ['0', '1', '2', '3'], resource: ['task', 'assignment'] }
+    });
+    await Permission.findOrCreate({
+      where: { roleId: associate.id, },
+      defaults: { action: ['0'], resource: ['task', 'company'] }
+    });
+
     console.log("DB OK");
     app.listen(process.env.API_PORT || 3000, () => console.log("API OK"));
   } catch (error) {

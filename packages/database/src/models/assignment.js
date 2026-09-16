@@ -65,7 +65,9 @@ export const Role = sequelize.define(
       unique: true,
     },
   },
-  { underscored: true },
+  {
+    underscored: true,
+  },
 );
 
 export const Permission = sequelize.define(
@@ -73,7 +75,7 @@ export const Permission = sequelize.define(
   {
     roleId: {
       primaryKey: true,
-      allowNull: false,
+      allowNull: true,
       references: {
         key: "id",
         model: "roles",
@@ -81,13 +83,43 @@ export const Permission = sequelize.define(
       type: DataTypes.UUID
     },
     action: {
-      primaryKey: true,
-      type: DataTypes.ENUM(...["0", "1", "2", "3"]) /*C R U D*/,
+      type: DataTypes.JSON(),
+      defaultValue: [],
+      allowNull: false,
+      validate: {
+        isAnArray(value) {
+          if (!Array.isArray(value)) { throw new Error("the field must be an array"); }
+
+          const allowedValues = ["0", "1", "2", "3"]; /** C.R.U.D  reference :OOOO*/
+
+          for (let item of value) {
+            if (!allowedValues.includes(item)) {
+              throw new Error(`${item} its not allowed, you may add into ${allowedValues}`);
+            }
+          }
+        }
+      }
     },
     resource: {
-      primaryKey: true,
-      type: DataTypes.ENUM("company", "user", "task", "assignment", "transaction", "timesheet") /*tablas*/
+      type: DataTypes.JSON(),
+      defaultValue: [],
+      allowNull: false,
+      validate: {
+        isAnArray(value) {
+          if (!Array.isArray(value)) throw new Error("the field must be an array");
+
+          const allowedValues = ["company", "user", "task", "assignment", "timesheet"]; /*tablas*/
+
+          for (let item of value) {
+            if (!allowedValues.includes(item)) {
+              throw new Error(`${item} its not allowed, you may add into ${allowedValues}`);
+            }
+          }
+        }
+      }
     }
   },
   { underscored: true },
 );
+
+

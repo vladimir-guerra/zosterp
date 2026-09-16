@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
 import { Token } from "@repo/database/src/models/user.js";
-import createError from "http-errors";
+import path from "path";
 
 export default async function generateTokens(req, res, next) {
   try {
     const { user, language, device } = req;
+
     const userId = user.id;
 
     const { id: tokenId } = (await Token.create({ userId, device })).dataValues;
@@ -16,9 +17,9 @@ export default async function generateTokens(req, res, next) {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: "/auth/refresh",
+      path: "/",
     });
 
     res.cookie("language", language, {
@@ -26,6 +27,7 @@ export default async function generateTokens(req, res, next) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: "/"
     });
 
     const accessToken = jwt.sign({ userId, language }, process.env.JWT_ACCESS_SECRET, {

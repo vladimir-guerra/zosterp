@@ -16,9 +16,8 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useCompany } from "../../providers/CompanyProvider"; 
 
-export default function Card({ id, children, companyData }) {
+export default function Card({ id, children, companyData, onMenuClick }) {
   const { t } = useTranslation("web");
-
   const { updateCompany, deleteCompany } = useCompany();
 
   const [openModal, setOpenModal] = useState(false);
@@ -29,7 +28,12 @@ export default function Card({ id, children, companyData }) {
   const handleOpen = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    setOpenModal(true);
+    
+    if (onMenuClick) {
+      onMenuClick(e);
+    } else {
+      setOpenModal(true);
+    }
   };
 
   const handleClose = () => {
@@ -92,7 +96,7 @@ export default function Card({ id, children, companyData }) {
           <MoreVertIcon fontSize="small" />
         </IconButton>
 
-        <CardContent sx={{ width: "100%", pt: 3, pb: "16px !important" }}>
+        <CardContent sx={{ width: "100%", pt: 3, pb: "16px !important", height: '100%', display: 'flex', flexDirection: 'column' }}>
           {children}
         </CardContent>
       </Carta>

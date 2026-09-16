@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { ToggleAuth } from "./guardians";
 import { ERP } from "./layouts";
+import { patch } from "@mui/material";
 
 const lazyElement = (path) => async () => {
   const module = await import(path);
@@ -63,7 +64,8 @@ export const routes = createBrowserRouter([
             indexElement: "./pages/Company/Task/TaskDashboard",
             children: [
               { path: "new", lazy: lazyElement("./pages/Company/Task/TaskForm") },
-              { path: "*", lazy: lazyElement("./pages/Company/Task/TaskDashboard") },
+              { path: ":taskId?", lazyElement: lazyElement("./pages/Company/Task/TaskDashboard")},
+              { path: "*", lazy: lazyElement("./pages/NotFound/NotFound") },
             ],
           }),
           {

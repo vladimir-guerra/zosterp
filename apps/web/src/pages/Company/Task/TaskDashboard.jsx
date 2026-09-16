@@ -6,31 +6,39 @@ import {
   Typography,
   Button,
   Grid,
-  Card,
-  CardContent,
-  CardActions,
   CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
-} from "@mui/material";
-import { useTask } from "../../../providers/TaskProvider";
+  TextField,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
 
-function TaskDetailDialog({ task, companyId, open, onClose }) {
+} from "@mui/material";
+
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useTask } from "../../../providers/TaskProvider";
+import CustomCard from "../../../components/Card/Card.jsx";
+
+function TaskDetailDialog({ task, companyId, open, onClose, defaultEditMode = false }) {
+
   const { t } = useTranslation("web");
   const { updateTask, deleteTask } = useTask();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(defaultEditMode);
   const [formData, setFormData] = useState(task || {});
   const [saving, setSaving] = useState(false);
 
+
   useEffect(() => {
     setFormData(task || {});
-    setIsEditing(false);
-  }, [task]);
-
-  if (!task) return null;
+    setIsEditing(defaultEditMode);
+  }, [task, defaultEditMode]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,7 +46,7 @@ function TaskDetailDialog({ task, companyId, open, onClose }) {
 
   const handleClose = () => {
     setIsEditing(false);
-    setFormData(task);
+    if (task) setFormData(task);
     onClose();
   };
 
@@ -48,7 +56,8 @@ function TaskDetailDialog({ task, companyId, open, onClose }) {
     try {
       setSaving(true);
       await updateTask(companyId, task.id, formData);
-      setIsEditing(false);
+      setIsEditing(true);
+      onClose();
     } catch (error) {
       console.error("Error al actualizar la tarea:", error);
     } finally {
@@ -67,15 +76,25 @@ function TaskDetailDialog({ task, companyId, open, onClose }) {
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ fontWeight: "bold" }}>
+      <DialogTitle sx={{ fontWeight: "bold", position: "relative" }}>
         {t("Task details", "Detalle de la Tarea")}
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          size="small"
+          color="error"
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+          }}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
       </DialogTitle>
 
       <DialogContent dividers>
-        <Box
-          component="form"
-          sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}
-        >
+        <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
           <TextField
             label={t("Title", "Título")}
             name="title"
@@ -84,6 +103,7 @@ function TaskDetailDialog({ task, companyId, open, onClose }) {
             disabled={!isEditing}
             fullWidth
           />
+
           <TextField
             label={t("Description", "Descripción")}
             name="description"
@@ -96,24 +116,14 @@ function TaskDetailDialog({ task, companyId, open, onClose }) {
           />
         </Box>
       </DialogContent>
-
       <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 2 }}>
-        <Button color="error" variant="outlined" onClick={handleDelete}>
-          {t("delete", "Eliminar")}
-        </Button>
-
         <Box sx={{ display: "flex", gap: 1 }}>
           <Button onClick={handleEditToggle} color="inherit">
             {isEditing ? t("cancel", "Cancelar") : t("edit", "Editar")}
           </Button>
 
           {isEditing && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSave}
-              disabled={saving}
-            >
+            <Button variant="contained" color="primary" onClick={handleSave} disabled={saving}>
               {saving ? t("saving", "Guardando...") : t("save", "Guardar")}
             </Button>
           )}
@@ -123,14 +133,66 @@ function TaskDetailDialog({ task, companyId, open, onClose }) {
   );
 }
 
+function TaskCardItem({ task, onEdit, onDelete, onAddSubtask, onViewSubtasks }) {
+  const { t } = useTranslation("web");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const menuOpen = Boolean(anchorEl);
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const executeAction = (actionFn) => {
+    handleMenuClose();
+    actionFn(task);
+  };
+
+  return (
+    <CustomCard id={task.id} onMenuClick={handleMenuClick}>
+      <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
+        <MenuItem onClick={() => executeAction(onEdit)}>
+          <ListItemIcon><VisibilityIcon fontSize="small" /></ListItemIcon>
+          <ListItemText>{t("view", "Detalle")}</ListItemText>
+        </MenuItem>
+        <MenuItem onClick={() => executeAction(onDelete)} sx={{ color: 'error.main' }}>
+          <ListItemIcon><DeleteIcon fontSize="small" color="error" /></ListItemIcon>
+          <ListItemText>{t("delete", "Eliminar")}</ListItemText>
+        </MenuItem>
+      </Menu>
+      <Box sx={{ flexGrow: 1, pr: 2 }}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">
+          {task.title}
+        </Typography>
+        {task.description && (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {task.description}
+          </Typography>
+        )}
+        <Box>
+          <Button size="small" color="primary" onClick={() => onViewSubtasks(task)}>
+            {t("content", "Contenido")}
+          </Button>
+        </Box>
+      </Box>
+    </CustomCard>
+  );
+}
+
+
 export default function TaskDashboard() {
   const { t } = useTranslation("web");
   const navigate = useNavigate();
-  const { tasks, fetchTasks, isLoading } = useTask();
-  const [searchParams] = useSearchParams();
+  const { tasks, fetchTasks, isLoading, deleteTask } = useTask();
+  const [searchParams, setSearchParams] = useSearchParams();
   const parentId = searchParams.get("parentId");
+  const editTaskId = searchParams.get("taskId");
   const { id: companyId } = useParams();
   const [selectedTask, setSelectedTask] = useState(null);
+  const [isDialogEditMode, setIsDialogEditMode] = useState(false);
 
   useEffect(() => {
     if (companyId) {
@@ -138,10 +200,59 @@ export default function TaskDashboard() {
     }
   }, [companyId, fetchTasks]);
 
+  useEffect(() => {
+    if (editTaskId && tasks.length > 0) {
+      const taskFound = tasks.find(t => t.id === editTaskId);
+      if (taskFound) {
+        setSelectedTask(taskFound);
+        setIsDialogEditMode(false);
+      } else if (!editTaskId) {
+        setSelectedTask(null);
+      }
+    }
+  }, [editTaskId, tasks]);
+
+
   const visibleTasks = tasks.filter((task) => {
     if (parentId) return task.parentId === parentId;
     return !task.parentId;
   });
+
+  const handleEditTask = (task) => {
+    setIsDialogEditMode(false);
+
+    setSearchParams((prevParams) => {
+      prevParams.set("taskId", task.id);
+      return prevParams
+    });
+  };
+
+  const handleCloseDialog = () => {
+    setIsDialogEditMode(false);
+    setSelectedTask(null);
+
+    const newParams = new URLSearchParams(searchParams);
+    newParams.delete("taskId");
+    setSearchParams(newParams);
+  };
+
+  const handleAddSubtask = (task) => {
+    navigate(`new?parentId=${task.id}`);
+  };
+
+  const handleDeleteTask = async (task) => {
+    if (window.confirm(t("confirm-delete", "¿Estás seguro de que deseas eliminar esta tarea?"))) {
+      try {
+        await deleteTask(companyId, task.id);
+      } catch (error) {
+        console.error("Error al eliminar la tarea:", error);
+      }
+    }
+  };
+
+  const handleViewSubtasks = (task) => {
+    navigate(`?parentId=${task.id}`);
+  };
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
@@ -167,28 +278,14 @@ export default function TaskDashboard() {
         ) : visibleTasks.length > 0 ? (
           <Grid container spacing={4} sx={{ width: '100%' }}>
             {visibleTasks.map((task) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={task.id}>
-                <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  <CardContent
-                    sx={{ flexGrow: 1, cursor: 'pointer', '&:hover': { opacity: 0.8 } }}
-                    onClick={() => setSelectedTask(task)}
-                  >
-                    <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">
-                      {task.title}
-                    </Typography>
-                    {task.description && (
-                      <Typography variant="body2" color="text.secondary">
-                        {task.description}
-                      </Typography>
-                    )}
-                  </CardContent>
-                  <CardActions sx={{ justifyContent: "flex-end", px: 2, pb: 2 }}>
-                    <Button size="small" color="primary" onClick={() => navigate(`?parentId=${task.id}`)}>
-                      {t("associate", "Asociar")}
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
+              <TaskCardItem
+                key={task.id}
+                task={task}
+                onEdit={handleEditTask}
+                onAddSubtask={handleAddSubtask}
+                onDelete={handleDeleteTask}
+                onViewSubtasks={handleViewSubtasks}
+              />
             ))}
           </Grid>
         ) : (
@@ -202,8 +299,9 @@ export default function TaskDashboard() {
         task={selectedTask}
         companyId={companyId}
         open={Boolean(selectedTask)}
-        onClose={() => setSelectedTask(null)}
+        defaultEditMode={isDialogEditMode}
+        onClose={handleCloseDialog}
       />
     </Box>
   );
-}
+} 

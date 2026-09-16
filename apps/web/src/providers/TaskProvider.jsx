@@ -59,11 +59,11 @@ export const TaskProvider = ({ children }) => {
 
   const updateTask = async (companyId, taskId, payload) => {
     try {
-      const response = await fetch(`${API_URL}/${companyId}/${taskId}`, {
+      const response = await fetch(`${API_URL}/${companyId}/tasks/${taskId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
       if (!response.ok) throw new Error("Error al actualizar la tarea");
 
@@ -81,13 +81,12 @@ export const TaskProvider = ({ children }) => {
 
   const deleteTask = async (companyId, taskId) => {
     try {
-      const response = await fetch(`${API_URL}/${companyId}/${taskId}`, {
+      const response = await fetch(`${API_URL}/${companyId}/tasks/${taskId}`, {
         method: "DELETE",
         credentials: "include",
       });
       if (!response.ok) throw new Error("Error al eliminar la tarea");
       const data = await response.json();
-      console.log(data);
       
       setTasks((prev) => prev.filter(task => task.id !== taskId));
     } catch (error) {

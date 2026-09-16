@@ -132,7 +132,7 @@ export default function Dashboard() {
                           fontWeight: 'bold'
                         }}
                       >
-                        {c.socialReason?.charAt(0).toUpperCase()}
+                        {c.commercialName?.charAt(0).toUpperCase()}
                       </Avatar>
                       <Box sx={{ minWidth: 0 }}>
                         <Typography
@@ -159,15 +159,6 @@ export default function Dashboard() {
                         variant="outlined"
                         sx={{ alignSelf: 'flex-start' }}
                       />
-                    )}
-
-                    {c.email && (
-                      <Stack direction="row" spacing={1} alignItems="center" color="text.secondary">
-                        <MailOutlineIcon fontSize="small" />
-                        <Typography variant="body2" noWrap>
-                          {c.email}
-                        </Typography>
-                      </Stack>
                     )}
                   </Stack>
                 </Link>

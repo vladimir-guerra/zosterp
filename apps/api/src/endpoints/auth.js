@@ -4,6 +4,8 @@ import { randomInt } from "crypto";
 import { sendMail } from "@repo/email";
 import getLocales from "../utils/locales.js";
 import jwt from "jsonwebtoken";
+import { Role } from "@repo/database";
+import path from "path";
 
 const loginHandler = async (req, res, recordUser) => {
   if (!recordUser) {
@@ -76,9 +78,13 @@ export const register = async (req, res, next) => {
   try {
     const { confirmPassword, ...cleanUserData } = req.data;
     const { email } = cleanUserData;
+    const role = await Role.findOne({ where: { name: 'owner' } });
     const [findOrCreatedUser, created] = await User.unscoped().findOrCreate({
       where: { email },
-      defaults: cleanUserData,
+      defaults: {
+        ...cleanUserData,
+        roleId: role.id
+      }
     });
 
     if (created) {
@@ -91,9 +97,8 @@ export const register = async (req, res, next) => {
 
       const { device = "unknown" } = req;
 
-      const token = jwt.sign({ userId: user.id, device }, SECRET, {
-        expiresIn: "5m",
-      });
+      const role = await Role.findOne({ where: { name: 'owner' } });
+      const token = jwt.sign({ userId: user.id, roleId: role.id, device }, SECRET, { expiresIn: "5m" });
 
       const { url } = await sendMail({
         to: email,
@@ -143,16 +148,16 @@ export const validateUser = async (req, res, next) => {
   try {
     const { token } = req.body;
     const SECRET = process.env.JWT_REGISTER_USER_SECRET;
-    const { userId, device } = jwt.verify(token, SECRET);
+    const { userId, roleId, device } = jwt.verify(token, SECRET);
 
     const foundUser = await User.findByPk(userId, { plain: true });
     if (!foundUser) throw createError(404, "not_user_found");
 
-    foundUser.isValid = true;
-    await foundUser.save();
+    await User.update({ isValid: true }, { where: { id: userId } });
 
     req.user = foundUser;
     req.device = device;
+    req.roleId = roleId;
     next();
   } catch (error) {
     next(error);
@@ -179,7 +184,7 @@ export const refresh = async (req, res, next) => {
 
     next();
   } catch (error) {
-    res.clearCookie("refreshToken");
+    res.clearCookie("refreshToken", { path: "/" });
     next(error);
   }
 };
@@ -187,8 +192,8 @@ export const refresh = async (req, res, next) => {
 export const logout = async (req, res, next) => {
   try {
     const { refreshToken } = req.cookies;
-    res.clearCookie("refreshToken");
-    res.clearCookie("language");
+    res.clearCookie("refreshToken", { path: '/' });
+    res.clearCookie("language", { path: '/' });
 
     if (refreshToken) {
       const { tokenId: id } = jwt.verify(

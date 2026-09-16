@@ -11,6 +11,14 @@ export const User = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    roleId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        key: 'id',
+        model: 'roles'
+      }
+    },
     email: {
       type: DataTypes.STRING(255),
       unique: true,
