@@ -6,6 +6,8 @@ import { getLanguage } from "./middlewares/index.js";
 import { errorHandler } from "./utils/index.js";
 import { authRouter } from "./routers/index.js";
 import { companyRouter } from "./routers/company.js";
+import { associateRouter } from "./routers/associates.js";
+import { timesheetRouter } from "./routers/index.js";
 import { rateLimit } from "express-rate-limit"
 import { slowDown } from 'express-slow-down'
 import cors from 'cors'
@@ -26,7 +28,7 @@ const slowLimiter = slowDown({
 });
 
 const corsOptions = {
-  origin: process.env.API_ORIGIN || "http://localhost:5173",
+  origin: "http://localhost:5173",
   credentials: true,
   methods: ["GET", "POST", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -44,12 +46,14 @@ app.use(getLanguage);
 app.use("/company", companyRouter);
 app.use("/auth", authRouter);
 app.use("/profile", authRouter);
+app.use("/associates", associateRouter);
+app.use("/timesheet", timesheetRouter);
 
 app.use(errorHandler);
 
 async function startServer() {
   try {
-    await sequelize.sync({ alter: true, force: false });
+    await sequelize.sync({ alter: false, force: false });
 
     // insercion de roles y permisos
     const [owner] = await Role.findOrCreate({ where: { name: 'owner' } });
@@ -62,11 +66,11 @@ async function startServer() {
     });
     await Permission.findOrCreate({
       where: { roleId: adminTask.id, },
-      defaults: { action: ['0', '1', '2', '3'], resource: ['task', 'assignment'] }
+      defaults: { action: ['0', '1', '2'], resource: ['task', 'assignment', 'timesheet'] }
     });
     await Permission.findOrCreate({
       where: { roleId: associate.id, },
-      defaults: { action: ['0'], resource: ['task', 'company'] }
+      defaults: { action: ['1'], resource: ['task', 'company', 'timesheet', 'assignment'] }
     });
 
     console.log("DB OK");

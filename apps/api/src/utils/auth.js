@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 import { Token } from "@repo/database/src/models/user.js";
-import path from "path";
 
 export default async function generateTokens(req, res, next) {
   try {
@@ -13,6 +12,7 @@ export default async function generateTokens(req, res, next) {
     const refreshToken = jwt.sign({ tokenId }, process.env.JWT_REFRESH_SECRET, {
       expiresIn: "7d",
     });
+
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -37,8 +37,8 @@ export default async function generateTokens(req, res, next) {
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax", 
-      maxAge: 15 * 60 * 1000, 
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000,
     });
 
     return res.status(200).json({ message: "Autenticación exitosa" });

@@ -5,7 +5,6 @@ import { sendMail } from "@repo/email";
 import getLocales from "../utils/locales.js";
 import jwt from "jsonwebtoken";
 import { Role } from "@repo/database";
-import path from "path";
 
 const loginHandler = async (req, res, recordUser) => {
   if (!recordUser) {
@@ -181,7 +180,6 @@ export const refresh = async (req, res, next) => {
     req.user = foundUser;
     req.device = foundToken.device;
     await foundToken.destroy();
-
     next();
   } catch (error) {
     res.clearCookie("refreshToken", { path: "/" });

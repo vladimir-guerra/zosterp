@@ -1,5 +1,4 @@
 import { Company, Associate } from "@repo/database/src/models/company.js";
-import { Transaction } from "@repo/database/src/models/transaction.js";
 import { Task } from "@repo/database/src/models/task.js";
 import createError from "http-errors";
 
@@ -104,13 +103,6 @@ export const getAssociates = async (req, res, next) => {
   } catch (error) { next(error); }
 };
 
-export const getTransactions = async (req, res, next) => {
-  try {
-    const { companyId } = req.params;
-    const transactions = await Transaction.findAll({ where: { companyId } });
-    res.status(200).json({ message: "Transacciones de la empresa obtenidas", data: transactions });
-  } catch (error) { next(error); }
-};
 
 export const getTasks = async (req, res, next) => {
   try {
