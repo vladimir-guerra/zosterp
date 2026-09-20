@@ -7,7 +7,6 @@ export const timesheetRouter = Router();
 timesheetRouter.use(isAuth);
 
 timesheetRouter.get("/", getTimesheets);
-timesheetRouter.post("/newTimesheet", createTimesheet);
-timesheetRouter.put("/updateTimesheet", updateTimesheet);
-timesheetRouter.delete("/deleteTimesheet", deleteTimesheet);
-
+timesheetRouter.post("/", createTimesheet);
+timesheetRouter.put("/:id", updateTimesheet);
+timesheetRouter.delete("/:id", deleteTimesheet);

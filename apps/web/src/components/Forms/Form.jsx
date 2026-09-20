@@ -29,12 +29,12 @@ export default function Form({ handler, schema, children }) {
     <FormProvider {...form}>
       <Button type="button" variant="outlined" onClick={() => navigate(-1)}
         sx={{ mb: 2 }}>
-        {t("web:back")}
+        {t("web:atras")}
       </Button>
       <form onSubmit={form.handleSubmit(handleSend)}>
         {children}
         <Button type="submit" disabled={loading} variant="outlined" sx={{mt: 2, width: "100%" }}>
-          {loading ? t("web:loading") : t("web:send")}
+          {loading ? t("web:cargando") : t("web:enviar")}
         </Button>
         {error && <span>{t(error)}</span>}
       </form>

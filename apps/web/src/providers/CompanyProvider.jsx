@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 const CompanyContext = createContext();
-const API_URL = import.meta.env.VITE_API_URL_DASHBOARD
+const API_URL = `${import.meta.env.VITE_API_URL}/company`;
 
 export const CompanyProvider = ({ children }) => {
   const [companies, setCompanies] = useState([]);

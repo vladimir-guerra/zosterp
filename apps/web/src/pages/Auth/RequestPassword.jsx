@@ -3,7 +3,6 @@ import { Form, Input } from "../../components";
 import { insertUserSchema } from "@repo/schemas";
 import { useTranslation } from "react-i18next";
 
-// Nuevas importaciones de Material UI para la estructura
 import { Box, AppBar, Toolbar, Typography, Paper } from "@mui/material";
 import React from "react";
 
@@ -17,7 +16,6 @@ export default function RequestPassword() {
     <>
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'grey.50' }}>
 
-        {/* --- HEADER --- */}
         <AppBar
           position="static"
           elevation={0}
@@ -34,29 +32,26 @@ export default function RequestPassword() {
           </Toolbar>
         </AppBar>
 
-        {/* --- CONTENIDO PRINCIPAL (Formulario centrado) --- */}
         <Box
           component="main"
           sx={{
-            flexGrow: 1, // Esto empuja el footer hacia abajo
+            flexGrow: 1, 
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             p: 2
           }}
         >
-          {/* Tarjeta blanca con sombra que envuelve el formulario */}
           <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400, borderRadius: 2 }}>
 
             <Form schema={insertUserSchema} handler={handleSubmit}>
-              <Typography variant="h4">{t("Request-password")}</Typography>
+              <Typography variant="h4">{t("Solicitud de contraseña")}</Typography>
               <Input name={"email"} />
             </Form>
 
           </Paper>
         </Box>
 
-        {/* --- FOOTER --- */}
         <Box
           component="footer"
           sx={{

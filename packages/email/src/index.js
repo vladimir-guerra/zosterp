@@ -18,18 +18,16 @@ export const transporter = createTransport({
 
 export const sendMail = async ({ to, subject, html }) => {
   const info = await transporter.sendMail({
-    from: `Zosterp Admin <${testAccount.user}>`,
+    from: `Zosterp owner <${testAccount.user}>`,
     to,
     subject,
     html,
   });
 
   const data = { info };
-  if (process.env.NODE_ENV === "development") {
-    const messageUrl = await getTestMessageUrl(info);
-    console.log(`Message sent: ${info.messageId}\nMessage URL: ${messageUrl}`);
-    data.url = messageUrl;
-  }
+  const messageUrl = await getTestMessageUrl(info);
+  console.log(`Message sent: ${info.messageId}\nMessage URL: ${messageUrl}`);
+  data.url = messageUrl;
 
   return data;
 };

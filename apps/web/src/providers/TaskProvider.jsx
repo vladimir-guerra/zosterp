@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useCallback } from "react";
 import { useCompany } from "./CompanyProvider";
 
 const TaskContext = createContext();
-const API_URL = import.meta.env.VITE_API_URL_DASHBOARD;
+const API_URL = `${import.meta.env.VITE_API_URL}/company`;
 
 export const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);

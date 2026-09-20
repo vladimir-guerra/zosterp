@@ -45,7 +45,7 @@ export default function Landpage() {
               variant="contained"
               color="primary"
             >
-              {t("login")}
+              {t("Login")}
             </Button>
             <Button
               component={Link}
@@ -53,7 +53,7 @@ export default function Landpage() {
               variant="contained"
               color="primary"
             >
-              {t("register")}
+              {t("Registro")}
             </Button>
           </Box>
         </Toolbar>

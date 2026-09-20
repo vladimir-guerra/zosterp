@@ -112,7 +112,7 @@ export default function Login() {
                 fontSize: "1.2rem",
               }}
             >
-              {t("user-register")}
+              {t("Registro de usuario")}
             </Link>
             <Link
               to={"/auth/password"}
@@ -122,7 +122,7 @@ export default function Login() {
                 fontSize: "1.2rem",
               }}
             >
-              {t("recover-password")}
+              {t("Recuperación de contraseña")}
             </Link>
           </Box>
         </Paper>

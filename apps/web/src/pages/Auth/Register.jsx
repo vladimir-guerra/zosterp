@@ -46,7 +46,7 @@ export default function Register() {
         <Box component="main" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
           <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400, borderRadius: 2, justifyContent: 'center' }}>
             
-            <Typography variant="h4" sx={{ mb: 2 }}>{t("Register")}</Typography>
+            <Typography variant="h4" sx={{ mb: 2 }}>{t("Registro")}</Typography>
 
             {errorMsg && <Alert severity="error" sx={{ mb: 2 }}>{errorMsg}</Alert>}
             {successMsg && <Alert severity="success" sx={{ mb: 2 }}>{successMsg}</Alert>}

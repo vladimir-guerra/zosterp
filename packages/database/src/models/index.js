@@ -1,10 +1,8 @@
-import { sequelize } from "../connection.js";
 import { User, Token } from "./user.js";
 import { Company, Associate } from "./company.js";
 import { Task } from "./task.js";
 import { Assignment, Role, Permission } from "./assignment.js";
 import { Timesheet } from "./timesheet.js";
-import { Transaction } from "./transaction.js";
 
 // --- Relaciones de Usuario ---
 User.hasMany(Token, { foreignKey: "userId" });
@@ -39,23 +37,20 @@ Assignment.belongsTo(Role, { foreignKey: "roleId" });
 Task.hasMany(Assignment, { foreignKey: "taskId" });
 Assignment.belongsTo(Task, { foreignKey: "taskId" });
 
-// --- Timesheets y Transacciones ---
+// --- Timesheets ---
 Task.hasMany(Timesheet, { foreignKey: "taskId" });
 Timesheet.belongsTo(Task, { foreignKey: "taskId" });
 
 Assignment.hasMany(Timesheet, { foreignKey: "assignmentId" });
 Timesheet.belongsTo(Assignment, { foreignKey: "assignmentId" });
 
-Assignment.hasMany(Transaction, { foreignKey: "assignmentId" });
-Transaction.belongsTo(Assignment, { foreignKey: "assignmentId" });
+// Relaciones entre user associate y role
+Associate.belongsTo(User, { foreignKey: 'userId' });
+User.hasMany(Associate, { foreignKey: 'userId' });
 
-Timesheet.hasMany(Transaction, { foreignKey: "timesheetId" });
-Transaction.belongsTo(Timesheet, { foreignKey: "timesheetId" });
+User.belongsTo(Role, { foreignKey: 'roleId' });
+Role.hasMany(User, { foreignKey: 'roleId' });
 
-Transaction.belongsTo(Transaction, {
-  as: "ParentTransaction",
-  foreignKey: "parentId",
-});
 
 export {
   User,
@@ -67,5 +62,4 @@ export {
   Task,
   Assignment,
   Timesheet,
-  Transaction,
 };

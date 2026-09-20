@@ -11,7 +11,6 @@ export {
   Associate,
   Task,
   TaskDashboard,
-  Transaction,
   Timesheet,
 } from "./Company";
 export { default as Dashboard } from "./Dashboard";

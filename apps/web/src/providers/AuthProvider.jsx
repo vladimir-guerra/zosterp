@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext(undefined);
-const API_URL = import.meta.env.VITE_API_URL_VALIDATE;
+const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true);
       await fetch(`${API_URL}/logout`, {
-        method: "POST",
+        method: "GET",
         credentials: "include",
       });
     } catch (error) {

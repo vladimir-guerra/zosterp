@@ -1,5 +1,8 @@
-import { Sequelize } from "sequelize";
+import { Sequelize, Op } from "sequelize";
 
-export const sequelize = new Sequelize(process.env.DATABASE_URL, {
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
     logging: false
 });
+
+
+export { sequelize, Op }

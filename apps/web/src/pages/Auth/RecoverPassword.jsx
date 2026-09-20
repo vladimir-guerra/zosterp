@@ -9,7 +9,7 @@ export default function RecoverPassword() {
   return (
     <>
       <Form schema={insertUserSchema} handler={handleSubmit}>
-        <h1>{t("request-password")}</h1>
+        <h1>{t("Solicitud de contraseña")}</h1>
         <Input name={"password"} />
         <Input name={"confirmPassowrd"}/>
       </Form>

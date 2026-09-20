@@ -50,10 +50,10 @@ function CompanyForm({ onClose }) {
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
           <Typography variant="h5" component="h2" color="primary.main" fontWeight="bold">
-            {t("Create company")}
+            {t("Crear empresa")}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            {t("Complete the next fields to log the information of your enterprise")}
+            {t("Complete los siguientes campos con la información de su organización")}
           </Typography>
         </Box>
       </Box>
@@ -62,9 +62,9 @@ function CompanyForm({ onClose }) {
 
       <Form schema={companySchema} handler={handleSubmit}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Input name={"socialReason"} label={t("Social Reason")} />
-          <Input name={"commercialName"} label={t("Commercial Name")} />
-          <Input name={"type"} label={t("Industry")} />
+          <Input name={"socialReason"} label={t("Razón social")} />
+          <Input name={"commercialName"} label={t("Nombre comercial")} />
+          <Input name={"type"} label={t("Industria")} />
         </Box>
       </Form>
     </Paper>
@@ -99,7 +99,7 @@ export default function Dashboard() {
         <Toolbar component="nav" sx={{ justifyContent: 'start' }}>
           {!creating && (
             <Button onClick={() => setCreating(true)} variant="text" sx={{ m: 3 }}>
-              {t("add company")}
+              {t("Añadir compañía")}
             </Button>
           )}
         </Toolbar>
@@ -167,7 +167,7 @@ export default function Dashboard() {
           </Grid>
         ) : (
           <Typography sx={{ m: 10 }}>
-            {t("no-companies")}
+            {t("No se encontraron resultados")}
           </Typography>
         )}
       </Box>

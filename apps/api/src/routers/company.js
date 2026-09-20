@@ -1,21 +1,20 @@
 import { Router } from "express";
 import { createCompany, getCompanies, getTasks, updateCompany, deleteCompany, getTaskAssignments, createTask, updateTask, deleteTask } from "../endpoints/company.js";
 import { isAuth } from "../middlewares/auth.js";
-
+import { verifyTaskAdmin } from "../middlewares/roles.js";
 export const companyRouter = Router();
 
-//protección de rutas :^
 companyRouter.use(isAuth);
 
-companyRouter.post("/", createCompany);
-companyRouter.post("/:companyId", createTask);
-
 companyRouter.get("/", getCompanies);
-companyRouter.get("/:companyId/tasks", getTasks);
-companyRouter.get("/:companyId/tasks/assignments", getTaskAssignments);
+companyRouter.get("/:companyId/tasks", verifyTaskAdmin, getTasks);
+companyRouter.get("/:companyId/tasks/assignments", verifyTaskAdmin, getTaskAssignments);
 
-companyRouter.patch("/:companyId", updateCompany);
-companyRouter.patch("/:companyId/tasks/:taskId", updateTask);
+companyRouter.post("/", createCompany);
+companyRouter.post("/:companyId", verifyTaskAdmin, createTask);
 
-companyRouter.delete("/:companyId", deleteCompany);
-companyRouter.delete("/:companyId/tasks/:taskId", deleteTask);
+companyRouter.patch("/:companyId", verifyTaskAdmin, updateCompany);
+companyRouter.patch("/:companyId/tasks/:taskId", verifyTaskAdmin, updateTask);
+
+companyRouter.delete("/:companyId", verifyTaskAdmin, deleteCompany);
+companyRouter.delete("/:companyId/tasks/:taskId", verifyTaskAdmin, deleteTask);

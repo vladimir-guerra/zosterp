@@ -43,13 +43,13 @@ export default function CompanyLayout() {
               to={routes.dashboard}
             />
             <Tab
-              label={t("tasks")}
+              label={t("tareas")}
               value={routes.tasks}
               component={Link}
               to={routes.tasks}
             />
             <Tab
-              label={t("associates")}
+              label={t("asociados")}
               value={routes.associates}
               component={Link}
               to={routes.associates}
