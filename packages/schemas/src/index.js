@@ -1,18 +1,28 @@
 import { z } from "zod";
 
-export const emailSchema = z.string().email("INVALID_EMAIL");
-const passwordSchema = z.string().min(8, "PW_TOO_SHORT");
+export const emailSchema = z.string().email("Email inválido");
+const passwordSchema = z.string().min(8, "Contraseña debe tener más de 8 caracteres.");
 
 export const insertUserSchema = z
   .object({
-    name: z.string().min(1, "NAME_REQUIRED"),
-    surname: z.string().min(1, "SURNAME_REQUIRED"),
+    name: z.string().min(1, "Nombre obligatorio"),
+    surname: z.string().min(1, "Apellido obligatorio"),
     email: emailSchema,
     password: passwordSchema,
-    confirmPassword: z.string().min(1, "CONFIRM_PW_REQUIRED"),
+    confirmPassword: z.string().min(1, "Confirme su contraseñaa"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "PW_DONT_MATCH",
+    message: "Contraseñas no coinciden",
+    path: ["confirmPassword"],
+  })
+
+export const newPasswordSchema = z
+  .object({
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, "Confirme su contraseñaa"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Contraseñas no coinciden",
     path: ["confirmPassword"],
   })
 
@@ -39,4 +49,8 @@ export const insertTaskSchema = z.object({
 
 export const recoverPasswordSchema = z.object({
   email: emailSchema,
+});
+
+export const twoFASchema = z.object({
+  code: z.string().length(6, "El código debe tener 6 dígitos"),
 });

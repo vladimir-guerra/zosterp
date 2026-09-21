@@ -1,10 +1,8 @@
 import { Link, Outlet, useParams, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { Box, Tabs, Tab, Paper } from "@mui/material";
 
 export default function CompanyLayout() {
   const { id } = useParams();
-  const { t } = useTranslation("web");
   const location = useLocation();
 
   const routes = {

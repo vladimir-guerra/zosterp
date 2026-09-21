@@ -7,18 +7,15 @@ import createError from "http-errors";
 export default function validate(schema) {
   return (req, _, next) => {
     try {
-      // Usamos safeParse en lugar del antiguo validate de Joi
       const result = schema.safeParse(req.body);
 
-      // Si la validación falla
       if (!result.success) {
-        // Zod guarda los errores en "issues"
         const message = result.error.issues.map((i) => i.message).join(",");
         throw createError(400, message);
       }
 
       req.data = result.data;
-      return next();
+      next();
     } catch (error) {
       return next(error);
     }

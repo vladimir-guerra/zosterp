@@ -2,30 +2,20 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form, Input } from "../../components";
 import { insertUserSchema } from "@repo/schemas";
-import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../providers";
 import { Box, AppBar, Toolbar, Typography, Paper, Alert } from "@mui/material";
 
 export default function Register() {
-  const { register } = useAuth();
-  const { t } = useTranslation("web");
-  
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [successMsg, setSuccessMsg] = useState(null);
+  const { auth, error } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (data) => {
-    try {
-      setErrorMsg(null);
-      setSuccessMsg(null);
-      
-      await register(data);
-      
-      setSuccessMsg(t("Cuenta creada exitosamente. Por favor, revisa tu correo para activarla."));
-      
-    } catch (error) {
-      setErrorMsg(error.message);
-    }
+    const result = await auth(data, true);
+    if(result.to2FA)
+      navigate(`/auth/2FA/${result.token}`)
+    else
+      navigate("/erp")
   };
 
   const date = new Date();
@@ -46,14 +36,15 @@ export default function Register() {
         <Box component="main" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
           <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400, borderRadius: 2, justifyContent: 'center' }}>
             
-            <Typography variant="h4" sx={{ mb: 2 }}>{t("Register")}</Typography>
+            <Typography variant="h4" sx={{ mb: 2 }}>{"Registrarse"}</Typography>
 
-            {errorMsg && <Alert severity="error" sx={{ mb: 2 }}>{errorMsg}</Alert>}
-            {successMsg && <Alert severity="success" sx={{ mb: 2 }}>{successMsg}</Alert>}
+            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
             <Form schema={insertUserSchema} handler={handleSubmit}>
-              <Input name={"name"} />
-              <Input name={"surname"} />
+              <div style={{ display: "flex" }}>
+                <Input name="name" />
+                <Input name="surname" />
+              </div>
               <Input name={"email"} />
               <Input name={"password"} type="password" />
               <Input name={"confirmPassword"} type="password" />
@@ -63,7 +54,7 @@ export default function Register() {
             </Form>
             
             <Link to={"/auth/login"} style={{ textDecoration: "none", color: "#1976d2", fontSize: "1.2rem", display: "flex", marginTop: "1rem" }}>
-              {t("Login")}
+              Iniciar Sesión
             </Link>
           </Paper>
         </Box>

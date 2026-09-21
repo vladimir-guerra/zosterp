@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Card } from "../../components";
 import { companySchema } from "@repo/schemas";
@@ -23,7 +22,6 @@ import ApartmentIcon from "@mui/icons-material/Apartment";
 import { useCompany } from "../../providers/CompanyProvider";
 
 function CompanyForm({ onClose }) {
-  const { t } = useTranslation("web");
   const { createCompany, isLoading } = useCompany();
 
   const handleSubmit = async (data) => {
@@ -50,10 +48,10 @@ function CompanyForm({ onClose }) {
       <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <Box>
           <Typography variant="h5" component="h2" color="primary.main" fontWeight="bold">
-            {t("Create company")}
+            Añadir compañía
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            {t("Complete the next fields to log the information of your enterprise")}
+            Complete the next fields to log the information of your enterprise
           </Typography>
         </Box>
       </Box>
@@ -62,9 +60,9 @@ function CompanyForm({ onClose }) {
 
       <Form schema={companySchema} handler={handleSubmit}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Input name={"socialReason"} label={t("Social Reason")} />
-          <Input name={"commercialName"} label={t("Commercial Name")} />
-          <Input name={"type"} label={t("Industry")} />
+          <Input name={"socialReason"} label="Razón social" />
+          <Input name={"commercialName"} label="Nombre comercial" />
+          <Input name={"type"} label={"Tipo"} />
         </Box>
       </Form>
     </Paper>
@@ -72,7 +70,6 @@ function CompanyForm({ onClose }) {
 }
 
 export default function Dashboard() {
-  const { t } = useTranslation("web");
   const [creating, setCreating] = useState(false);
 
   const {
@@ -99,7 +96,7 @@ export default function Dashboard() {
         <Toolbar component="nav" sx={{ justifyContent: 'start' }}>
           {!creating && (
             <Button onClick={() => setCreating(true)} variant="text" sx={{ m: 3 }}>
-              {t("add company")}
+              Añadir una compañía
             </Button>
           )}
         </Toolbar>
@@ -167,7 +164,7 @@ export default function Dashboard() {
           </Grid>
         ) : (
           <Typography sx={{ m: 10 }}>
-            {t("no-companies")}
+            Sin compañías
           </Typography>
         )}
       </Box>

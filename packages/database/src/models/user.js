@@ -1,6 +1,5 @@
 import { DataTypes, Op } from "sequelize";
 import { sequelize } from "../index.js";
-import { languages } from "@repo/locales";
 import { hash, compare, genSalt } from "bcrypt";
 
 export const User = sequelize.define(
@@ -17,7 +16,8 @@ export const User = sequelize.define(
       references: {
         key: 'id',
         model: 'roles'
-      }
+      },
+      allowNull: true
     },
     email: {
       type: DataTypes.STRING(255),
@@ -34,12 +34,7 @@ export const User = sequelize.define(
     },
     has_2fa: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    language: {
-      type: DataTypes.ENUM(...languages),
-      defaultValue: "en",
-      allowNull: false,
+      defaultValue: true,
     },
     isValid: {
       type: DataTypes.BOOLEAN,
@@ -65,7 +60,6 @@ export const User = sequelize.define(
         }
       },
     },
-    defaultScope: { attributes: { exclude: ["passwordHash"] } },
   },
 );
 
@@ -85,7 +79,7 @@ export const Token = sequelize.define(
         model: "users",
       },
     },
-    device: {
+    userAgent: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -98,7 +92,7 @@ export const Token = sequelize.define(
         await Token.destroy({
           where: {
             userId: token.userId,
-            device: token.device,
+            userAgent: token.userAgent,
             id: {
               [Op.ne]: token.id,
             },

@@ -1,48 +1,26 @@
 import jwt from "jsonwebtoken";
 import { Token } from "@repo/database/src/models/user.js";
 
-export default async function generateTokens(req, res, next) {
-  try {
-    const { user, language, device } = req;
+export default async function generateTokens(req, res) {
+  const { headers, user } = req;
+  const PAYLOAD = { userId: user.id, userAgent: headers["user-agent"] || "unknown" };
+  const { id: tokenId } = (await Token.create(PAYLOAD)).dataValues;
 
-    const userId = user.id;
+  const refreshToken = jwt.sign({ tokenId }, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: "7d",
+  });
 
-    const { id: tokenId } = (await Token.create({ userId, device })).dataValues;
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: "/",
+  });
 
-    const refreshToken = jwt.sign({ tokenId }, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: "7d",
-    });
+  const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_ACCESS_SECRET, {
+    expiresIn: "15m",
+  });
 
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: "/",
-    });
-
-    res.cookie("language", language, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: "/"
-    });
-
-    const accessToken = jwt.sign({ userId, language }, process.env.JWT_ACCESS_SECRET, {
-      expiresIn: "15m",
-    });
-
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
-    });
-
-    return res.status(200).json({ message: "Autenticación exitosa" });
-  } catch (error) {
-    next(error);
-  }
+  return res.status(200).json({ accessToken });
 }

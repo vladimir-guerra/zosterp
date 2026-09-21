@@ -13,7 +13,6 @@
   "dependencies": {
     "@repo/database": "workspace:^",
     "@repo/email": "workspace:^",
-    "@repo/locales": "workspace:^",
     "@repo/schemas": "workspace:^",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",

@@ -15,9 +15,11 @@
   },
   "license": "ISC",
   "dependencies": {
-    "@repo/locales": "workspace:^",
     "bcrypt": "^6.0.0",
     "pg": "^8.22.0",
     "sequelize": "^6.37.8"
+  },
+  "devDependencies": {
+    "sqlite3": "^6.0.1"
   }
 }

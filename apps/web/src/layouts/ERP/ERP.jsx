@@ -1,5 +1,4 @@
 import { Link, Outlet } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { 
   AppBar, 
   Toolbar, 
@@ -9,7 +8,6 @@ import {
 } from "@mui/material";
 
 export default function ERP() {
-  const { t } = useTranslation("web");
   const currentDate = new Date();
   const Year = `${currentDate.getFullYear()}`;
 
@@ -52,7 +50,7 @@ export default function ERP() {
               color="primary"
               sx={{ fontWeight: 'bold' }}
             >
-              {t("profile")}
+              Perfil
             </Button>
             <Button
               component={Link}
@@ -61,7 +59,7 @@ export default function ERP() {
               color="primary"
               sx={{ fontWeight: 'bold' }}
             >
-              {t("ERP")}
+              ERP
             </Button>
           </Box>
         </Toolbar>

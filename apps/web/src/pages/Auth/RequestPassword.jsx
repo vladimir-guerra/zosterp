@@ -1,15 +1,20 @@
 import { useForm } from "react-hook-form";
 import { Form, Input } from "../../components";
 import { insertUserSchema } from "@repo/schemas";
-import { useTranslation } from "react-i18next";
+import { useAuth } from "../../providers"
 
 // Nuevas importaciones de Material UI para la estructura
 import { Box, AppBar, Toolbar, Typography, Paper } from "@mui/material";
-import React from "react";
+import { useState } from "react";
 
 export default function RequestPassword() {
-  const { t } = useTranslation("web");
-  const handleSubmit = (data) => { };
+  const { requestPassword } = useAuth();
+  const [success, setSuccess] = useState(null);
+  const handleSubmit = (data) => {
+    const success = requestPassword(data.email);
+    if(success)
+      setSuccess("Correo de recuperación enviado")
+  };
   const date = new Date();
   const Year = `${date.getFullYear()}`;
 
@@ -49,10 +54,10 @@ export default function RequestPassword() {
           <Paper elevation={3} sx={{ p: 4, width: '100%', maxWidth: 400, borderRadius: 2 }}>
 
             <Form schema={insertUserSchema} handler={handleSubmit}>
-              <Typography variant="h4">{t("Request-password")}</Typography>
+              <Typography variant="h4">Recuperar contraseña</Typography>
               <Input name={"email"} />
             </Form>
-
+            {success && <Typography>{success}</Typography>}
           </Paper>
         </Box>
 

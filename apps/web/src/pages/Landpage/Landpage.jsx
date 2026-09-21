@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import {
   AppBar,
   Toolbar,
@@ -15,7 +14,6 @@ import img_background from "../../../src/assets/fonts/images/landpage-bg-image.j
 import features from "./features.json"
 
 export default function Landpage() {
-  const { t } = useTranslation("web");
   const currentDate = new Date();
   const Year = `${currentDate.getFullYear()}`;
   return (
@@ -45,7 +43,7 @@ export default function Landpage() {
               variant="contained"
               color="primary"
             >
-              {t("login")}
+              Iniciar Sesión
             </Button>
             <Button
               component={Link}
@@ -53,7 +51,7 @@ export default function Landpage() {
               variant="contained"
               color="primary"
             >
-              {t("register")}
+              Registrarse
             </Button>
           </Box>
         </Toolbar>

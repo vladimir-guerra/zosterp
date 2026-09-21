@@ -1,5 +1,4 @@
 import { useFormContext } from "react-hook-form";
-import { useTranslation } from "react-i18next";
 import Textfield from "@mui/material/TextField"
 import { Alert } from "@mui/material";
  
@@ -10,7 +9,6 @@ export default function Input({ name, type = "text" }) {
     : lowerName.includes("email")
       ? "email"
       : type;
-  const { t } = useTranslation(["web", "schemas"]);
   const {
     register,
     formState: { errors },
@@ -37,7 +35,7 @@ export default function Input({ name, type = "text" }) {
         }}
       />
 
-      {errorMessage && <Alert severity="error" sx={{mb:1}}>{t(`schemas:${errorMessage}`)}</Alert>}
+      {errorMessage && <Alert severity="error" sx={{mb:1}}>{errorMessage}</Alert>}
     </div>
   );
 }

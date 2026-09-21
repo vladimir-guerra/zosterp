@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import {
+import { useState } from "react";import {
   Button,
   Card as Carta,
   CardContent,
@@ -17,7 +15,6 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useCompany } from "../../providers/CompanyProvider"; 
 
 export default function Card({ id, children, companyData, onMenuClick }) {
-  const { t } = useTranslation("web");
   const { updateCompany, deleteCompany } = useCompany();
 
   const [openModal, setOpenModal] = useState(false);
@@ -29,11 +26,10 @@ export default function Card({ id, children, companyData, onMenuClick }) {
     e.stopPropagation();
     e.preventDefault();
     
-    if (onMenuClick) {
+    if (onMenuClick) 
       onMenuClick(e);
-    } else {
+    else 
       setOpenModal(true);
-    }
   };
 
   const handleClose = () => {
@@ -103,13 +99,13 @@ export default function Card({ id, children, companyData, onMenuClick }) {
 
       <Dialog open={openModal} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle sx={{ fontWeight: 'bold' }}>
-          {t("Company Properties", "Propiedades de la Empresa")}
+          Propiedades de la Empresa
         </DialogTitle>
 
         <DialogContent dividers>
           <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             <TextField
-              label={t("Social Reason", "Razón Social")}
+              label="Razón Social"
               name="socialReason"
               value={formData.socialReason || ""}
               onChange={handleChange}
@@ -117,7 +113,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
               fullWidth
             />
             <TextField
-              label={t("Commercial Name", "Nombre Comercial")}
+              label="Nombre Comercial"
               name="commercialName"
               value={formData.commercialName || ""}
               onChange={handleChange}
@@ -125,7 +121,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
               fullWidth
             />
             <TextField
-              label={t("Industry", "Industria")}
+              label="Industria"
               name="type"
               value={formData.type || ""}
               onChange={handleChange}
@@ -137,17 +133,17 @@ export default function Card({ id, children, companyData, onMenuClick }) {
 
         <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 2 }}>
           <Button color="error" variant="outlined" onClick={handleDelete} disabled={isSaving}>
-            {t("delete", "Eliminar")}
+            Eliminar
           </Button>
 
           <Box sx={{ display: "flex", gap: 1 }}>
             <Button onClick={handleEditToggle} color="inherit" disabled={isSaving}>
-              {isEditing ? t("cancel", "Cancelar") : t("edit", "Editar")}
+              {isEditing ? "Cancelar" : "Editar"}
             </Button>
 
             {isEditing && (
               <Button variant="contained" color="primary" onClick={handleSave} disabled={isSaving}>
-                {isSaving ? t("saving", "Guardando...") : t("save", "Guardar")}
+                {isSaving ? "Guardando..." : "Guardar"}
               </Button>
             )}
           </Box>

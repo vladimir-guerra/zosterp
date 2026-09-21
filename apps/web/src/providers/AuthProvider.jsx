@@ -1,97 +1,85 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { setAccessToken, api } from "../services/api.js";
 
 const AuthContext = createContext(undefined);
-const API_URL = import.meta.env.VITE_API_URL_VALIDATE;
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const handleSetToken = (token) => {
+    setAccessToken(token);
+    setIsAuthenticated(!!token);
+  };
 
   useEffect(() => {
-    const checkAuth = async () => {
+    const initAuth = async () => {
       try {
-        const response = await fetch(`${API_URL}/refresh`, {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
-          setUser(null);
-        }
+        setIsLoading(true);
+        const response = await api.get("/auth/refresh");
+        if (response.data.accessToken)
+          handleSetToken(response.data.accessToken);
       } catch (error) {
-        console.error("Error al verificar la sesión:", error);
-        setUser(null);
+        handleSetToken(null);
       } finally {
         setIsLoading(false);
       }
     };
 
-    checkAuth();
+    initAuth();
+    setError(null);
   }, []);
 
-  const register = async (userData) => {
+  const TFA = async (code, token) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`${API_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
+      setError(null);
+      const response = await api.post(`/auth/2FA`, { code }, {
+        headers: { Authorization: `Bearer ${token}` }
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        const hasInfo = data.info && Object.keys(data.info).length > 0;
-        const errorMsg = hasInfo
-          ? Object.values(data.info)[0]
-          : "Ocurrió un error inesperado en el registro. Verifique sus datos.";
-        throw new Error(errorMsg);
-      }
-
-      return data;
+      if (response.data.accessToken)
+        handleSetToken(response.data.accessToken);
     } catch (error) {
-      console.error("Error al registrar:", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error de autenticación";
+      setError(errorMessage);
       throw error;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const login = async (credentials) => {
+  const requestPassword = async(email) => {
     try {
       setIsLoading(true);
-      
-      const response = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-        credentials: "include", 
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.info?.invalid_credentials || "Error de credenciales");
-      }
-
-      const meResponse = await fetch(`${API_URL}/me`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", 
-      });
-
-      if (!meResponse.ok) {
-        throw new Error("No se pudo obtener el perfil del usuario");
-      }
-
-      const meData = await meResponse.json();
-      setUser(meData.user); 
+      setError(null);
+      const response = await api.post(`/auth/password`, { email });
       return true;
-
     } catch (error) {
-      console.error("Error al iniciar sesión", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error de autenticación";
+      setError(errorMessage);
+      throw error;
+      return false
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const auth = async (userData, register = true) => {
+    try {
+      setError(null);
+      setIsLoading(true);
+      const endpoint = register ? "/auth/register" : "/auth/login";
+      const response = await api.post(endpoint, userData);
+
+      if (response.data?.token) return { to2FA: true, token: response.data.token };
+      else {
+        handleSetToken(response.data.accessToken);
+        return { to2FA: false };
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || "Error de autenticación";
+      setError(errorMessage);
       throw error;
     } finally {
       setIsLoading(false);
@@ -100,22 +88,21 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      setError(null);
       setIsLoading(true);
-      await fetch(`${API_URL}/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
+      await api.get(`/auth/logout`);
     } catch (error) {
-      console.error("Error al cerrar sesión", error);
+      const errorMessage = error.response?.data?.message || error.message || "Error al cerrar sesión";
+      setError(errorMessage);
     } finally {
-      setUser(null);
+      handleSetToken(null);
       setIsLoading(false);
     }
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated: !!user, login, logout, isLoading, register }}
+      value={{ isAuthenticated, logout, isLoading, auth, TFA, error }}
     >
       {children}
     </AuthContext.Provider>

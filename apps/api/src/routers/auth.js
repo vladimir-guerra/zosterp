@@ -1,8 +1,13 @@
 import { Router } from "express";
 import {validate}  from "../middlewares/index.js";
-import {getDevice} from "../middlewares/device.js";
-import { isAuth } from "../middlewares/index.js";
-import {insertUserSchema, loginSchema, recoverPasswordSchema } from "@repo/schemas";
+import { isAuth, getToken } from "../middlewares/index.js";
+import {
+  insertUserSchema, 
+  loginSchema, 
+  recoverPasswordSchema,
+  newPasswordSchema,
+  twoFASchema
+} from "@repo/schemas";
 import { generateTokens } from "../utils/index.js";
 import {
   login,
@@ -11,36 +16,27 @@ import {
   register,
   renewPassword,
   requestNewPassword,
-  me
+  TwoFA
 } from "../endpoints/index.js";
 
-
-
 export const authRouter = Router();
-
-authRouter.get("/me", isAuth, me)
 
 authRouter.post(
   "/login",
   validate(loginSchema),
-  getDevice,
   login,
   generateTokens,
 );
 
 authRouter.post(
   "/register",
-  async (req, _res, next) => {
-    req.body.language = req.language;
-    next();
-  },
   validate(insertUserSchema),
-  getDevice,
   register,
   generateTokens,
 );
 
+authRouter.post("/2FA", validate(twoFASchema), getToken, TwoFA, generateTokens);
 authRouter.get("/refresh", refresh, generateTokens);
 authRouter.get("/logout", logout);
 authRouter.post("/password", validate(recoverPasswordSchema), requestNewPassword);
-authRouter.patch("/password", renewPassword);
+authRouter.patch("/password", validate(newPasswordSchema), getToken, renewPassword);

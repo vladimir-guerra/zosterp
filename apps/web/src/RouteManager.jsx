@@ -4,7 +4,7 @@ import { ERP } from "./layouts";
 import { patch } from "@mui/material";
 
 const lazyElement = (path) => async () => {
-  const module = await import(path);
+  const module = await import(/* @vite-ignore */ path);
   return { Component: module.default };
 };
 
@@ -35,12 +35,12 @@ export const routes = createBrowserRouter([
             indexElement: "./pages/Auth/RequestPassword",
             children: [
               {
-                path: "recover",
+                path: ":token",
                 lazy: lazyElement("./pages/Auth/RecoverPassword"),
               },
             ],
           }),
-          { path: "2FA", lazy: lazyElement("./pages/Auth/TwoFA") },
+          { path: "2FA/:token", lazy: lazyElement("./pages/Auth/TwoFA") },
         ],
       },
     ],
@@ -64,7 +64,7 @@ export const routes = createBrowserRouter([
             indexElement: "./pages/Company/Task/TaskDashboard",
             children: [
               { path: "new", lazy: lazyElement("./pages/Company/Task/TaskForm") },
-              { path: ":taskId?", lazyElement: lazyElement("./pages/Company/Task/TaskDashboard")},
+              { path: ":taskId?", lazy: lazyElement("./pages/Company/Task/TaskDashboard")},
               { path: "*", lazy: lazyElement("./pages/NotFound/NotFound") },
             ],
           }),

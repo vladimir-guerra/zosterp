@@ -2,22 +2,16 @@ import jwt from 'jsonwebtoken';
 import createError from "http-errors";
 
 export const isAuth = async (req, _res, next) => {
-  try {
-    const token = req.cookies.accessToken;
+  let decoded = jwt.verify(req.token, process.env.JWT_ACCESS_SECRET);
+  req.user = { id: decoded.userId };
+  next();
+};
 
-    if (!token) throw createError(401, "not_session");
-
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
-    } catch (error) {
-      throw createError(401, error);
-    }
-
-    req.user = { id: decoded.userId };
-    req.language = decoded.language
-    return next();
-  } catch (error) {
-    next(error);
-  }
+export const getToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  if (!authHeader || !authHeader.startsWith("Bearer "))
+    throw createError(401, "Token no proporcionado o formato inválido")
+  
+  req.token = authHeader.split(" ")[1];
+  next();
 };

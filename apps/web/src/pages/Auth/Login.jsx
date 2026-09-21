@@ -2,28 +2,22 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form, Input } from "../../components";
 import { loginSchema } from "@repo/schemas";
-import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { Box, AppBar, Toolbar, Typography, Paper, Alert, Button } from "@mui/material";
 import { useAuth } from "../../providers";
 
 export default function Login() {
-  const { login } = useAuth();
-  const { t } = useTranslation("web");
+  const { auth, error } = useAuth();
   const date = new Date();
   const Year = `${date.getFullYear()}`;
   const navigate = useNavigate();
-  const [errorMsg, setErrorMsg] = useState(null);
 
   const handleSubmit = async (data) => {
-    try {
-      setErrorMsg(null);
-      await login(data);
-      navigate("/erp");
-    } catch (error) {
-      setErrorMsg(error.message);
-      throw error
-    }
+    const result = await auth(data, false);
+    if(result.to2FA)
+      navigate(`/auth/2FA/${result.token}`)
+    else
+      navigate("/erp")
   };
 
   return (
@@ -81,12 +75,12 @@ export default function Login() {
             gutterBottom
             sx={{ mb: 3 }}
           >
-            {t("Login")}
+            Iniciar Sesión
           </Typography>
 
-          {errorMsg && (
+          {error && (
             <Alert severity="error" sx={{ mb: 3 }}>
-              {errorMsg}
+              {error}
             </Alert>
           )}
 
@@ -112,7 +106,7 @@ export default function Login() {
                 fontSize: "1.2rem",
               }}
             >
-              {t("user-register")}
+              Registrarse
             </Link>
             <Link
               to={"/auth/password"}
@@ -122,7 +116,7 @@ export default function Login() {
                 fontSize: "1.2rem",
               }}
             >
-              {t("recover-password")}
+              Recuperar contraseña
             </Link>
           </Box>
         </Paper>

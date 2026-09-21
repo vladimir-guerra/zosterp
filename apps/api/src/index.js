@@ -2,7 +2,6 @@ import "dotenv/config"
 import cookieParser from "cookie-parser";
 import express from "express";
 import { sequelize } from "@repo/database";
-import { getLanguage } from "./middlewares/index.js";
 import { errorHandler } from "./utils/index.js";
 import { authRouter } from "./routers/index.js";
 import { companyRouter } from "./routers/company.js";
@@ -28,7 +27,7 @@ const slowLimiter = slowDown({
 });
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: process.env.API_ORIGIN,
   credentials: true,
   methods: ["GET", "POST", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
@@ -41,7 +40,6 @@ app.use(rateLimiter);
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use(getLanguage);
 
 app.use("/company", companyRouter);
 app.use("/auth", authRouter);
@@ -53,7 +51,7 @@ app.use(errorHandler);
 
 async function startServer() {
   try {
-    await sequelize.sync({ alter: false, force: false });
+    await sequelize.sync();
 
     // insercion de roles y permisos
     const [owner] = await Role.findOrCreate({ where: { name: 'owner' } });

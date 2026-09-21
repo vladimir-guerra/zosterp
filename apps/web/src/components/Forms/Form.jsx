@@ -1,6 +1,5 @@
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Button from "@mui/material/Button"
@@ -10,7 +9,6 @@ export default function Form({ handler, schema, children }) {
   const form = useForm({ resolver: zodResolver(schema) });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { t } = useTranslation("web");
 
   const handleSend = async (data) => {
     try {
@@ -29,14 +27,14 @@ export default function Form({ handler, schema, children }) {
     <FormProvider {...form}>
       <Button type="button" variant="outlined" onClick={() => navigate(-1)}
         sx={{ mb: 2 }}>
-        {t("web:back")}
+        Volver
       </Button>
       <form onSubmit={form.handleSubmit(handleSend)}>
         {children}
         <Button type="submit" disabled={loading} variant="outlined" sx={{mt: 2, width: "100%" }}>
-          {loading ? t("web:loading") : t("web:send")}
+          {loading ? "Cargando..." : "Enviar"}
         </Button>
-        {error && <span>{t(error)}</span>}
+        {error && <span>{error}</span>}
       </form>
     </FormProvider> 
   );
