@@ -7,8 +7,8 @@ export const companyRouter = Router();
 companyRouter.use(isAuth);
 
 companyRouter.get("/", getCompanies);
-companyRouter.get("/:companyId/tasks", verifyTaskAdmin, getTasks);
-companyRouter.get("/:companyId/tasks/assignments", verifyTaskAdmin, getTaskAssignments);
+companyRouter.get("/:companyId/tasks", getTasks);
+companyRouter.get("/:companyId/tasks/assignments", getTaskAssignments);
 
 companyRouter.post("/", createCompany);
 companyRouter.post("/:companyId", verifyTaskAdmin, createTask);

@@ -1,19 +1,33 @@
-import { Role, Timesheet, User } from "@repo/database";
+import { Role, Timesheet, User, Task, Assignment, Associate } from "@repo/database";
 import createError from "http-errors";
 
 export const getTimesheets = async (req, res, next) => {
     try {
-        const { taskId } = req.query;
-
-        const whereClause = {};
-        if (taskId) whereClause.taskId = taskId;
+        const { companyId } = req.params;
 
         const timesheets = await Timesheet.findAll({
-            where: whereClause
+            include: [
+                {
+                    model: Task,
+                    attributes: ['title']
+                },
+                {
+                    model: Assignment,
+                    required: true,
+                    include: [{
+                        model: Associate,
+                        where: { companyId: companyId },
+                        include: [{
+                            model: User,
+                            attributes: ['name', 'surname']
+                        }]
+                    }]
+                }
+            ]
         });
 
         if (!timesheets || timesheets.length === 0) {
-            throw createError(404, "No se han encontrado registros de tiempo");
+            return res.status(200).json({ response: "No hay registros", data: [] });
         }
 
         res.status(200).json({ response: "Resultados encontrados", data: timesheets });
@@ -25,14 +39,6 @@ export const getTimesheets = async (req, res, next) => {
 export const createTimesheet = async (req, res, next) => {
     try {
         const { taskId, assignmentId, startedAt, finishedAt } = req.body;
-        const { userId } = req.user;
-
-        const userData = await User.findOne({ where: { id: userId } });
-        if (!userData) throw createError(404, "Usuario no encontrado");
-
-        const userRole = await Role.findOne({ where: { id: userData.roleId } });
-
-        if (!userRole) throw createError(403, "Rol no válido o sin permisos");
 
         const timesheet = await Timesheet.create({
             taskId,
@@ -50,17 +56,12 @@ export const createTimesheet = async (req, res, next) => {
 export const updateTimesheet = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { startedAt, finishedAt } = req.body;
-
-        const { userId } = req.user;
-        const userData = await User.findOne({ where: { id: userId } });
-
-        const userRole = await Role.findOne({ where: { id: userData.roleId } });
-        if (!userRole) throw createError(403, "Rol no válido o sin permisos");
+        const { startedAt, finishedAt, assignmentId } = req.body;
 
         const [updatedRows] = await Timesheet.update({
+            assignmentId,
             startedAt,
-            finishedAt,
+            finishedAt
         }, {
             where: { id }
         });
@@ -78,14 +79,7 @@ export const updateTimesheet = async (req, res, next) => {
 export const deleteTimesheet = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { userId } = req.user;
 
-        const dataFound = await User.findOne({ where: { id: userId } });
-        const roleFound = await Role.findOne({ where: { id: dataFound.roleId } });
-
-        if (!roleFound) {
-            throw createError(404, "Rol inválido");
-        }
         const deletedRows = await Timesheet.destroy({
             where: { id }
         });

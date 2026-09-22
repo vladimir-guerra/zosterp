@@ -48,14 +48,14 @@ app.use("/company", companyRouter);
 app.use("/auth", authRouter);
 app.use("/profile", authRouter);
 app.use("/associates", associateRouter);
-app.use("/timesheet", timesheetRouter);
+app.use("/timesheets", timesheetRouter);
 app.use("/assignments", assignmentRouter);
 
 app.use(errorHandler);
 
 async function startServer() {
   try {
-    await sequelize.sync({ alter: false, force: false });
+    await sequelize.sync({ alter: true, force: true });
 
     const [owner] = await Role.findOrCreate({ where: { name: 'owner' } });
     const [adminTask] = await Role.findOrCreate({ where: { name: 'adminTask' }, defaults: { parentId: owner.id } });

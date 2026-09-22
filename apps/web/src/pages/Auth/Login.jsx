@@ -81,7 +81,7 @@ export default function Login() {
             gutterBottom
             sx={{ mb: 3 }}
           >
-            {t("Login")}
+            Login
           </Typography>
 
           {errorMsg && (
@@ -112,7 +112,7 @@ export default function Login() {
                 fontSize: "1.2rem",
               }}
             >
-              {t("Registro de usuario")}
+              Registro de usuario
             </Link>
             <Link
               to={"/auth/password"}
@@ -122,7 +122,7 @@ export default function Login() {
                 fontSize: "1.2rem",
               }}
             >
-              {t("Recuperación de contraseña")}
+              Recuperación de contraseña
             </Link>
           </Box>
         </Paper>

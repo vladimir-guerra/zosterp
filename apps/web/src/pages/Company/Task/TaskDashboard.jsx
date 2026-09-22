@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Box, Typography, Button, Grid, CircularProgress } from "@mui/material";
 import { useTask } from "../../../providers/TaskProvider";
 
-import TaskCardItem from "./TaskCardItem.jsx"; 
+import TaskCardItem from "./TaskCardItem.jsx";
 import TaskDetailDialog from "./TaskDetailDialog.jsx";
 
 export default function TaskDashboard() {
@@ -13,10 +13,10 @@ export default function TaskDashboard() {
   const { tasks, fetchTasks, isLoading, deleteTask } = useTask();
   const [searchParams, setSearchParams] = useSearchParams();
   const { id: companyId } = useParams();
-  
+
   const parentId = searchParams.get("parentId");
   const editTaskId = searchParams.get("taskId");
-  
+
   const [selectedTask, setSelectedTask] = useState(null);
   const [isDialogEditMode, setIsDialogEditMode] = useState(false);
 
@@ -60,11 +60,11 @@ export default function TaskDashboard() {
   };
 
   const handleAddSubtask = (task) => navigate(`new?parentId=${task.id}`);
-  
+
   const handleViewSubtasks = (task) => navigate(`?parentId=${task.id}`);
 
   const handleDeleteTask = async (task) => {
-    if (window.confirm(t("¿Estás seguro de que deseas eliminar esta tarea?"))) {
+    if (window.confirm("¿Estás seguro de que deseas eliminar esta tarea?")) {
       try {
         await deleteTask(companyId, task.id);
       } catch (error) {
@@ -78,7 +78,7 @@ export default function TaskDashboard() {
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4, alignItems: 'center' }}>
         {parentId && (
           <Button variant="outlined" onClick={() => navigate(-1)}>
-            {t("Volver a la tarea superior")}
+            Volver a la tarea superior
           </Button>
         )}
         <Button
@@ -87,7 +87,7 @@ export default function TaskDashboard() {
           variant="contained"
           color="primary"
         >
-          {t("Agregar Tarea")}
+          Agregar Tarea
         </Button>
       </Box>
 
@@ -109,7 +109,7 @@ export default function TaskDashboard() {
           </Grid>
         ) : (
           <Typography textAlign="center" color="text.secondary" mt={4}>
-            {t("No hay tareas aquí.")}
+            No hay tareas aquí.
           </Typography>
         )}
       </Box>

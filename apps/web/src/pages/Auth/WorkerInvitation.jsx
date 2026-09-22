@@ -31,10 +31,10 @@ export default function WorkerInvitation() {
             <Container maxWidth="sm">
                 <Paper elevation={3} sx={{ p: 5, mt: 10, textAlign: "center", borderRadius: 2 }}>
                     <Typography variant="h4" color="primary" gutterBottom>
-                        {t("¡Invitación Aceptada!")}
+                        ¡Invitación Aceptada!
                     </Typography>
                     <Typography variant="subtitle1" color="textSecondary" sx={{ mb: 3 }}>
-                        {t("Tu cuenta ha sido configurada. Te estamos redirigiendo al inicio de sesión...")}
+                        Tu cuenta ha sido configurada. Te estamos redirigiendo al inicio de sesión...
                     </Typography>
                     <CircularProgress size={30} />
                 </Paper>
@@ -48,10 +48,10 @@ export default function WorkerInvitation() {
 
                 <Box sx={{ mb: 4, textAlign: "center" }}>
                     <Typography component="h1" variant="h4" fontWeight="bold" gutterBottom>
-                        {t("Completar Registro")}
+                        Completar Registro
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                        {t("Has sido invitado a unirse a una empresa en ZostERP.")}
+                        Has sido invitado a unirse a una empresa en ZostERP.
                     </Typography>
                 </Box>
 

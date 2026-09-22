@@ -80,7 +80,7 @@ export const routes = createBrowserRouter([
           },
           {
             path: "timesheets",
-            lazy: lazyElement("./pages/Company/Timesheet"),
+            lazy: lazyElement("./pages/Company/Timesheet/Timesheet"),
           },
         ],
       }),

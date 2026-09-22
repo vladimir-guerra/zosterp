@@ -20,7 +20,6 @@ export default function Landpage() {
   const Year = `${currentDate.getFullYear()}`;
   return (
     <Box sx={{ bgcolor: 'common.white', minHeight: '100vh' }}>
-      {/* --- NAVEGACIÓN --- */}
       <AppBar
         position="sticky"
         elevation={0}
@@ -45,7 +44,7 @@ export default function Landpage() {
               variant="contained"
               color="primary"
             >
-              {t("Login")}
+              Login
             </Button>
             <Button
               component={Link}
@@ -53,7 +52,7 @@ export default function Landpage() {
               variant="contained"
               color="primary"
             >
-              {t("Registro")}
+              Registro
             </Button>
           </Box>
         </Toolbar>
@@ -62,10 +61,10 @@ export default function Landpage() {
       <Box
         sx={{
           position: 'relative',
-          backgroundImage: `url(${img_background})`, 
+          backgroundImage: `url(${img_background})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundAttachment: 'fixed', 
+          backgroundAttachment: 'fixed',
           color: 'white',
           py: { xs: 12, md: 20 },
           textAlign: 'center',
@@ -98,9 +97,9 @@ export default function Landpage() {
             <Typography variant="h3" component="h2" color="primary.dark" gutterBottom sx={{ textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>
               Características Principales
             </Typography>
-            <Typography variant="subtitle1" color="text.secondary" sx={{ maxWidth: '700px', py: 1, mb: 10}}>
-              Nuestro sistema propone una serie de opciones para la gestión de su empresa, cubriendo las necesidades básicas administrativas y a su vez encaminando a la digitalización de su negocio. Permitiendo no solo despreocuparse en dónde y cómo va a guardar sus datos, sino que podrá acceder a ellos desde cualquier lugar y en cualquier momento. 
-            </Typography> 
+            <Typography variant="subtitle1" color="text.secondary" sx={{ maxWidth: '700px', py: 1, mb: 10 }}>
+              Nuestro sistema propone una serie de opciones para la gestión de su empresa, cubriendo las necesidades básicas administrativas y a su vez encaminando a la digitalización de su negocio. Permitiendo no solo despreocuparse en dónde y cómo va a guardar sus datos, sino que podrá acceder a ellos desde cualquier lugar y en cualquier momento.
+            </Typography>
           </Box>
 
           <Box
@@ -117,9 +116,9 @@ export default function Landpage() {
                 key={feature.id}
                 elevation={0}
                 sx={{
-                  flex: 1, 
-                  maxWidth: '240px', 
-                  minWidth: '180px', 
+                  flex: 1,
+                  maxWidth: '240px',
+                  minWidth: '180px',
                   border: '1px solid',
                   borderColor: 'grey.200',
                   display: 'flex',
@@ -134,7 +133,7 @@ export default function Landpage() {
                   image={`${feature.img}-${feature.id}.png`}
                   alt={`Feature ${feature.id}`}
                   sx={{ height: '120px', width: '100%', objectFit: 'contain', p: 2, bgcolor: 'transparent' }}
-                  
+
                 />
                 <CardContent sx={{ flexGrow: 1, p: 2 }}>
                   <Typography variant="h6" color="primary.main" fontWeight="bold" gutterBottom sx={{ fontSize: '1.1rem' }}>
@@ -151,9 +150,9 @@ export default function Landpage() {
 
         <Box sx={{ bgcolor: 'primary.50', py: 8, mt: 10 }}>
           <Container>
-            <Typography variant="h4" sx={{mb: 5}}>Ventajas al usar nuestro ERP</Typography>
-            <Typography variant="body1" color="text.primary" align="center" sx={{ lineHeight: 1.8}}>
-             La versatilidad de nuestro sistema le permitirá alcanzar los objetivos de su organización. Diseñado bajo los pilares de la simplicidad y la rapidez, podrá monitorear el rendimiento de su equipo al día, gestionar su facturación y obtener una vista panorámica de todo su negocio.
+            <Typography variant="h4" sx={{ mb: 5 }}>Ventajas al usar nuestro ERP</Typography>
+            <Typography variant="body1" color="text.primary" align="center" sx={{ lineHeight: 1.8 }}>
+              La versatilidad de nuestro sistema le permitirá alcanzar los objetivos de su organización. Diseñado bajo los pilares de la simplicidad y la rapidez, podrá monitorear el rendimiento de su equipo al día, gestionar su facturación y obtener una vista panorámica de todo su negocio.
             </Typography>
           </Container>
         </Box>

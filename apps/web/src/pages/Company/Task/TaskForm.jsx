@@ -37,16 +37,16 @@ export default function TaskForm() {
       <Paper elevation={3} sx={{ p: { xs: 3, md: 4 }, borderRadius: 2, width: '100%', maxWidth: 500, mt: 4 }}>
         <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h5" component="h2" color="primary.main" fontWeight="bold">
-            {parentId ? t("Crear Subtarea") : t("Crear Tarea")}
+            {parentId ? "Crear Subtarea" : "Crear Tarea"}
           </Typography>
         </Box>
         <Divider sx={{ mb: 3 }} />
         <Form schema={insertTaskSchema} handler={handleSubmit}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Input name={"title"} label={t("Título")} />
-            <Input name={"description"} label={t("Descripción")} />
-            <Input variant="outlined" name={"startedAt"} type="date" label={t("Fecha de inicio")} />
-            <Input variant="outlined" name={"approximateFinishDate"} type="date" label={t("Fecha de fin aprox.")} />
+            <Input name={"title"} label={"Título"} />
+            <Input name={"description"} label={"Descripción"} />
+            <Input variant="outlined" name={"startedAt"} type="date" label={"Fecha de inicio"} />
+            <Input variant="outlined" name={"approximateFinishDate"} type="date" label={"Fecha de fin aprox."} />
           </Box>
         </Form>
       </Paper>

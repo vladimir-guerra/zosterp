@@ -62,7 +62,6 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      setIsLoading(true);
       
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",

@@ -107,7 +107,7 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
     return (
         <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
             <DialogTitle sx={{ fontWeight: "bold", position: "relative" }}>
-                {task?.title || t("Detalle de la Tarea")}
+                {task?.title || "Detalle de la Tarea"}
                 <IconButton aria-label="close" onClick={handleClose} size="small" color="error" sx={{ position: 'absolute', right: 8, top: 8 }}>
                     <CloseIcon fontSize="small" />
                 </IconButton>
@@ -116,16 +116,16 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
             <DialogContent dividers sx={{ p: 0 }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', px: 2 }}>
                     <Tabs value={tabValue} onChange={handleTabChange} aria-label="task details tabs">
-                        <Tab label={t("Información")} />
-                        <Tab label={t("Equipo")} />
-                        <Tab label={t("Tiempos")} />
+                        <Tab label={"Información"} />
+                        <Tab label={"Equipo"} />
+                        <Tab label={"Tiempos"} />
                     </Tabs>
                 </Box>
 
                 <CustomTabPanel value={tabValue} index={0}>
                     <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                        <TextField label={t("Título")} name="title" value={formData.title || ""} onChange={handleChange} disabled={!isEditing} fullWidth />
-                        <TextField label={t("Descripción")} name="description" value={formData.description || ""} onChange={handleChange} disabled={!isEditing} fullWidth multiline minRows={4} />
+                        <TextField label={"Título"} name="title" value={formData.title || ""} onChange={handleChange} disabled={!isEditing} fullWidth />
+                        <TextField label={"Descripción"} name="description" value={formData.description || ""} onChange={handleChange} disabled={!isEditing} fullWidth multiline minRows={4} />
                     </Box>
                 </CustomTabPanel>
 
@@ -134,10 +134,10 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
                         <>
                             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 3, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
                                 <FormControl fullWidth size="small">
-                                    <InputLabel>{t("Seleccionar Asociado")}</InputLabel>
+                                    <InputLabel>Seleccionar Asociado</InputLabel>
                                     <Select
                                         value={selectedAssociateToAssign}
-                                        label={t("Seleccionar Asociado")}
+                                        label={"Seleccionar Asociado"}
                                         onChange={(e) => setSelectedAssociateToAssign(e.target.value)}
                                     >
                                         {unassignedAssociates.map((assoc) => (
@@ -148,16 +148,16 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
                                     </Select>
                                 </FormControl>
                                 <Button variant="contained" onClick={handleAssignAssociate} disabled={!selectedAssociateToAssign}>
-                                    {t("Asignar")}
+                                    Asignar
                                 </Button>
                             </Box>
 
-                            <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 1 }}>{t("Miembros Actuales")}</Typography>
+                            <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 1 }}>Miembros Actuales</Typography>
                             <Divider sx={{ mb: 2 }} />
 
                             <List>
                                 {assignments.length === 0 ? (
-                                    <Typography variant="body2" color="textSecondary">{t("Nadie ha sido asignado a esta tarea aún.")}</Typography>
+                                    <Typography variant="body2" color="textSecondary">Nadie ha sido asignado a esta tarea aún.</Typography>
                                 ) : (
                                     assignments.map((assignment) => (
                                         <ListItem key={assignment.id} sx={{ bgcolor: 'background.paper', mb: 1, borderRadius: 1, border: '1px solid #eee' }}>
@@ -178,15 +178,15 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
 
                 <CustomTabPanel value={tabValue} index={2}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h6">{t("Registro de Horas")}</Typography>
+                        <Typography variant="h6">Registro de Horas</Typography>
                         <Typography variant="subtitle1" color="primary" fontWeight="bold">
-                            {t("Total")}: {totalHours} hrs
+                            {"Total"}: {totalHours} hrs
                         </Typography>
                     </Box>
                     <Divider sx={{ mb: 2 }} />
                     <List>
                         {timesheets.length === 0 ? (
-                            <Typography variant="body2" color="textSecondary">{t("No hay tiempos registrados en esta tarea.")}</Typography>
+                            <Typography variant="body2" color="textSecondary">No hay tiempos registrados en esta tarea.</Typography>
                         ) : (
                             timesheets.map((ts) => (
                                 <ListItem key={ts.id} sx={{ bgcolor: 'background.paper', mb: 1, borderRadius: 1, border: '1px solid #eee' }}>
@@ -206,11 +206,11 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
                 {tabValue === 0 && (
                     <Box sx={{ display: "flex", gap: 1, ml: 'auto' }}>
                         <Button onClick={() => setIsEditing(!isEditing)} color="inherit">
-                            {isEditing ? t("Cancelar") : t("Editar Tarea")}
+                            {isEditing ? "Cancelar" : "Editar Tarea"}
                         </Button>
                         {isEditing && (
                             <Button variant="contained" color="primary" onClick={handleSaveTask} disabled={saving}>
-                                {saving ? t("Guardando...") : t("Guardar Cambios")}
+                                {saving ? "Guardando..." : "Guardar Cambios"}
                             </Button>
                         )}
                     </Box>

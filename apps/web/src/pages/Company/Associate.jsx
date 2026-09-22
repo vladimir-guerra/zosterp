@@ -45,7 +45,7 @@ export default function Associate() {
   }, [companyId, fetchAssociates]);
 
   const handleRemove = async (email) => {
-    if (window.confirm(t("¿Estás seguro de que deseas eliminar a este asociado?"))) {
+    if (window.confirm("¿Estás seguro de que deseas eliminar a este asociado?")) {
       try {
         await removeAssociate(email);
       } catch (error) {
@@ -68,7 +68,7 @@ export default function Associate() {
     try {
       await inviteAssociate(companyId, inviteEmail);
       setInviteOpen(false);
-      alert(t("Invitación enviada exitosamente")); 
+      alert("Invitación enviada exitosamente");
     } catch (error) {
       setInviteError(error.message);
     } finally {
@@ -80,14 +80,14 @@ export default function Associate() {
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h5" fontWeight="bold" color="primary">
-          {t("Asociados")}
+          Asociados
         </Typography>
         <Button
           variant="contained"
           startIcon={<PersonAddIcon />}
           onClick={handleOpenInvite}
         >
-          {t("Invitar")}
+          Invitar
         </Button>
       </Box>
 
@@ -100,10 +100,10 @@ export default function Associate() {
           <Table sx={{ minWidth: 600 }} aria-label="associates table">
             <TableHead sx={{ bgcolor: 'grey.50' }}>
               <TableRow>
-                <TableCell>{t("Usuario")}</TableCell>
-                <TableCell>{t("Correo")}</TableCell>
-                <TableCell>{t("Rol")}</TableCell>
-                <TableCell align="right">{t("Acciones")}</TableCell>
+                <TableCell>Usuario</TableCell>
+                <TableCell>Correo</TableCell>
+                <TableCell>Rol</TableCell>
+                <TableCell align="right">Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -130,7 +130,7 @@ export default function Associate() {
                   </TableCell>
                   <TableCell align="right">
                     <Button size="small" color="error" onClick={() => handleRemove(associate.User.email)}>
-                      {t("Quitar")}
+                      Quitar
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -141,20 +141,20 @@ export default function Associate() {
       ) : (
         <Paper elevation={0} sx={{ p: 6, textAlign: 'center', borderRadius: 2, border: '1px dashed', borderColor: 'grey.400', bgcolor: 'grey.50' }}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            {t("Aún no tienes asociados")}
+            Aún no tienes asociados
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            {t("Invita a miembros de tu equipo para comenzar a colaborar.")}
+            Invita a miembros de tu equipo para comenzar a colaborar.
           </Typography>
           <Button variant="outlined" startIcon={<PersonAddIcon />} onClick={handleOpenInvite}>
-            {t("Invitar al primer asociado")}
+            Invitar al primer asociado
           </Button>
         </Paper>
       )}
 
       <Dialog open={inviteOpen} onClose={() => setInviteOpen(false)} fullWidth maxWidth="xs">
         <DialogTitle sx={{ fontWeight: "bold", position: "relative" }}>
-          {t("Invitar Asociado")}
+          Invitar Asociado
           <IconButton
             onClick={() => setInviteOpen(false)}
             size="small"
@@ -165,12 +165,12 @@ export default function Associate() {
         </DialogTitle>
         <DialogContent dividers>
           <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-            {t("Ingresa el correo electrónico de la persona que deseas invitar. Se le enviará un enlace para registrarse en la plataforma.")}
+            Ingresa el correo electrónico de la persona que deseas invitar. Se le enviará un enlace para registrarse en la plataforma.
           </Typography>
 
           <TextField
             fullWidth
-            label={t("Correo electrónico")}
+            label={"Correo electrónico"}
             type="email"
             variant="outlined"
             value={inviteEmail}
@@ -183,14 +183,14 @@ export default function Associate() {
         </DialogContent>
         <DialogActions sx={{ p: 2 }}>
           <Button onClick={() => setInviteOpen(false)} color="inherit" disabled={isInviting}>
-            {t("Cancelar")}
+            Cancelar
           </Button>
           <Button
             variant="contained"
             onClick={handleSendInvite}
             disabled={!inviteEmail || isInviting}
           >
-            {isInviting ? t("Enviando...") : t("Enviar Invitación")}
+            {isInviting ? "Enviando..." : "Enviar Invitación"}
           </Button>
         </DialogActions>
       </Dialog>

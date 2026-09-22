@@ -52,7 +52,7 @@ export default function ERP() {
               color="primary"
               sx={{ fontWeight: 'bold' }}
             >
-              {t("perfil")}
+              {"perfil"}
             </Button>
             <Button
               component={Link}
@@ -61,7 +61,7 @@ export default function ERP() {
               color="primary"
               sx={{ fontWeight: 'bold' }}
             >
-              {t("ERP")}
+              {"ERP"}
             </Button>
           </Box>
         </Toolbar>

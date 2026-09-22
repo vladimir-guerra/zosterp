@@ -14,7 +14,7 @@ import {
   Box
 } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { useCompany } from "../../providers/CompanyProvider"; 
+import { useCompany } from "../../providers/CompanyProvider";
 
 export default function Card({ id, children, companyData, onMenuClick }) {
   const { t } = useTranslation("web");
@@ -28,7 +28,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
   const handleOpen = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    
+
     if (onMenuClick) {
       onMenuClick(e);
     } else {
@@ -46,7 +46,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
 
   const handleDelete = async () => {
     try {
-      await deleteCompany(id); 
+      await deleteCompany(id);
       handleClose();
     } catch (error) {
       console.error("Error al eliminar la empresa:", error);
@@ -63,7 +63,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      await updateCompany(id, formData); 
+      await updateCompany(id, formData);
       setIsEditing(false);
     } catch (error) {
       console.error("Error al actualizar la empresa:", error);
@@ -103,13 +103,13 @@ export default function Card({ id, children, companyData, onMenuClick }) {
 
       <Dialog open={openModal} onClose={handleClose} fullWidth maxWidth="sm">
         <DialogTitle sx={{ fontWeight: 'bold' }}>
-          {t("Propiedades de la Empresa")}
+          Propiedades de la Empresa
         </DialogTitle>
 
         <DialogContent dividers>
           <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             <TextField
-              label={t("Razón Social")}
+              label={"Razón Social"}
               name="socialReason"
               value={formData.socialReason || ""}
               onChange={handleChange}
@@ -117,7 +117,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
               fullWidth
             />
             <TextField
-              label={t("Nombre Comercial")}
+              label={"Nombre Comercial"}
               name="commercialName"
               value={formData.commercialName || ""}
               onChange={handleChange}
@@ -125,7 +125,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
               fullWidth
             />
             <TextField
-              label={t("Industria")}
+              label={"Industria"}
               name="type"
               value={formData.type || ""}
               onChange={handleChange}
@@ -137,17 +137,17 @@ export default function Card({ id, children, companyData, onMenuClick }) {
 
         <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 2 }}>
           <Button color="error" variant="outlined" onClick={handleDelete} disabled={isSaving}>
-            {t("Eliminar")}
+            {"Eliminar"}
           </Button>
 
           <Box sx={{ display: "flex", gap: 1 }}>
             <Button onClick={handleEditToggle} color="inherit" disabled={isSaving}>
-              {isEditing ? t("Cancelar") : t("Editar")}
+              {isEditing ? "Cancelar" : "Editar"}
             </Button>
 
             {isEditing && (
               <Button variant="contained" color="primary" onClick={handleSave} disabled={isSaving}>
-                {isSaving ? t("Guardando...") : t("Guardar")}
+                {isSaving ? "Guardando..." : "Guardar"}
               </Button>
             )}
           </Box>

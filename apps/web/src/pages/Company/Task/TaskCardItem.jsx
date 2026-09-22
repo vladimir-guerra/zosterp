@@ -36,11 +36,11 @@ export default function TaskCardItem({ task, onEdit, onDelete, onAddSubtask, onV
       <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleMenuClose}>
         <MenuItem onClick={() => executeAction(onEdit)}>
           <ListItemIcon><VisibilityIcon fontSize="small" /></ListItemIcon>
-          <ListItemText>{t("Detalle")}</ListItemText>
+          <ListItemText>Detalle</ListItemText>
         </MenuItem>
         <MenuItem onClick={() => executeAction(onDelete)} sx={{ color: 'error.main' }}>
           <ListItemIcon><DeleteIcon fontSize="small" color="error" /></ListItemIcon>
-          <ListItemText>{t("Eliminar")}</ListItemText>
+          <ListItemText>Eliminar</ListItemText>
         </MenuItem>
       </Menu>
       <Box sx={{ flexGrow: 1, pr: 2 }}>
@@ -54,7 +54,7 @@ export default function TaskCardItem({ task, onEdit, onDelete, onAddSubtask, onV
         )}
         <Box>
           <Button size="small" color="primary" onClick={() => onViewSubtasks(task)}>
-            {t("Contenido")}
+            Contenido
           </Button>
         </Box>
       </Box>

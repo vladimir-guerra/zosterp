@@ -9,7 +9,7 @@ export default function TwoFA() {
   return (
     <>
       <Form schema={insertUserSchema} handler={handleSubmit}>
-        <h1>{t("twofa")}</h1>
+        <h1>twofa</h1>
         <Input name={"code"} />
       </Form>
     </>

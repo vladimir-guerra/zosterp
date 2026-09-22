@@ -94,11 +94,11 @@ export const TaskTrackingProvider = ({ children }) => {
 
   // TIMESHEETS 
 
-  const fetchTimesheets = useCallback(async (taskId) => {
-    setIsLoading(true);
+  const fetchTimesheets = useCallback(async (companyId) => {
     try {
-      const response = await fetch(`${URL_TIMESHEETS}?taskId=${taskId}`, {
-        credentials: "include",
+      const response = await fetch(`${URL_TIMESHEETS}/${companyId}`, {
+        method: 'GET',
+        credentials: "include"
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Error al obtener tiempos");
@@ -110,10 +110,9 @@ export const TaskTrackingProvider = ({ children }) => {
     }
   }, []);
 
-  const createTimesheet = async (payload) => {
-    setIsLoading(true);
+  const createTimesheet = async (payload, companyId) => {
     try {
-      const response = await fetch(`${URL_TIMESHEETS}/newTimesheet`, {
+      const response = await fetch(`${URL_TIMESHEETS}/${companyId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -131,11 +130,11 @@ export const TaskTrackingProvider = ({ children }) => {
     }
   };
 
-  const updateTimesheet = async (payload) => {
+  const updateTimesheet = async (payload, companyId) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${URL_TIMESHEETS}/${payload.id}`, {
-        method: "PUT",
+      const response = await fetch(`${URL_TIMESHEETS}/${companyId}/${payload.id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify(payload),
@@ -151,10 +150,10 @@ export const TaskTrackingProvider = ({ children }) => {
     }
   };
 
-  const deleteTimesheet = async (payload) => {
+  const deleteTimesheet = async (payload, companyId) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${URL_TIMESHEETS}/${payload.id}`, {
+      const response = await fetch(`${URL_TIMESHEETS}/${companyId}/${payload.id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

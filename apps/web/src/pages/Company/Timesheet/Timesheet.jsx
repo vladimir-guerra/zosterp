@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -18,19 +18,29 @@ import {
 } from "@mui/material";
 import TimerIcon from "@mui/icons-material/Timer";
 import GetAppIcon from "@mui/icons-material/GetApp";
+import AddIcon from "@mui/icons-material/Add";
 
-import { useTaskTracking } from "../../providers/TaskTrackingProvider.jsx";
+import { useTaskTracking } from "../../../providers/TaskTrackingProvider.jsx";
+import CreateTimesheetModal from "./CreateTimesheet.jsx";
+import EditTimesheetModal from "./EditTimesheet.jsx";
 
 export default function Timesheet() {
   const { t } = useTranslation("web");
   const { id: companyId } = useParams();
 
-  const { timesheets, isLoading, fetchTimesheets } = useTaskTracking();
+  const {
+    timesheets = [],
+    isLoading,
+    fetchTimesheets,
+    deleteTimesheet
+  } = useTaskTracking();
+
+  const [openCreate, setOpenCreate] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState(null);
 
   useEffect(() => {
-    if (companyId) {
-      fetchTimesheets(""); 
-    }
+    if (companyId) fetchTimesheets(companyId);
   }, [companyId, fetchTimesheets]);
 
   const formatDate = (dateString) => {
@@ -40,46 +50,71 @@ export default function Timesheet() {
   };
 
   const calculateDuration = (start, end) => {
-    if (!end) return t("En curso...");
+    if (!end) return "En curso...";
     const diff = new Date(end) - new Date(start);
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff / (1000 * 60)) % 60);
     return `${hours}h ${minutes}m`;
   };
 
+  const handleOpenEdit = (record) => {
+    setSelectedRecord(record);
+    setOpenEdit(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este registro de tiempo?")) {
+      try {
+        await deleteTimesheet({ id }, companyId);
+        fetchTimesheets(companyId);
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+        alert("Error al eliminar el registro");
+      }
+    }
+  };
+
+  const refreshData = () => fetchTimesheets(companyId);
+
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h5" fontWeight="bold" color="primary">
-          {t("Timesheets", "Cronograma de estimación")}
+          Timesheets
         </Typography>
-        <Button variant="outlined" startIcon={<GetAppIcon />} disabled={timesheets.length === 0}>
-          {t("Exportar")}
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button variant="outlined" startIcon={<GetAppIcon />} disabled={timesheets?.length === 0}>
+            Exportar
+          </Button>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpenCreate(true)}>
+            Registrar Tiempo
+          </Button>
+        </Box>
       </Box>
 
-      {isLoading ? (
+      {isLoading && timesheets?.length === 0 ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
           <CircularProgress />
         </Box>
-      ) : timesheets.length > 0 ? (
+      ) : timesheets?.length > 0 ? (
         <TableContainer component={Paper} elevation={2} sx={{ borderRadius: 2 }}>
-          <Table sx={{ minWidth: 700 }} aria-label="timesheet table">
+          <Table sx={{ minWidth: 700 }}>
             <TableHead sx={{ bgcolor: 'grey.50' }}>
               <TableRow>
-                <TableCell>{t("Tarea")}</TableCell>
-                <TableCell>{t("Responsable")}</TableCell>
-                <TableCell>{t("Inicio")}</TableCell>
-                <TableCell>{t("Fin")}</TableCell>
-                <TableCell align="right">{t("Duración")}</TableCell>
-                <TableCell align="center">{t("Estado")}</TableCell>
+                <TableCell>Tarea</TableCell>
+                <TableCell>Responsable</TableCell>
+                <TableCell>Inicio</TableCell>
+                <TableCell>Fin</TableCell>
+                <TableCell align="right">Duración</TableCell>
+                <TableCell align="center">Estado</TableCell>
+                <TableCell align="center">Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {timesheets.map((record) => (
-                <TableRow key={record.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableRow key={record.id}>
                   <TableCell sx={{ fontWeight: 'medium' }}>
-                    {record.Task?.title || t("Tarea desconocida")}
+                    {record.Task?.title || "Tarea desconocida"}
                   </TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -87,7 +122,7 @@ export default function Timesheet() {
                         {record.Assignment?.Associate?.User?.name?.charAt(0).toUpperCase() || 'U'}
                       </Avatar>
                       <Typography variant="body2">
-                        {record.Assignment?.Associate?.User?.name || "Usuario"}
+                        {record.Assignment?.Associate?.User?.name || "Usuario"} {record.Assignment?.Associate?.User?.lastName || ""}
                       </Typography>
                     </Box>
                   </TableCell>
@@ -100,10 +135,18 @@ export default function Timesheet() {
                   </TableCell>
                   <TableCell align="center">
                     {record.finishedAt || record.finished_at ? (
-                      <Chip label={t("Finalizado")} size="small" color="success" variant="outlined" />
+                      <Chip label={"Finalizado"} size="small" color="success" variant="outlined" />
                     ) : (
-                      <Chip label={t("En ejecución")} size="small" color="primary" />
+                      <Chip label={"En ejecución"} size="small" color="primary" />
                     )}
+                  </TableCell>
+                  <TableCell align="center">
+                    <Button size="small" onClick={() => handleOpenEdit(record)}>
+                      Editar
+                    </Button>
+                    <Button size="small" color="error" onClick={() => handleDelete(record.id)}>
+                      Eliminar
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -114,13 +157,28 @@ export default function Timesheet() {
         <Paper elevation={0} sx={{ p: 6, textAlign: 'center', borderRadius: 2, border: '1px dashed', borderColor: 'grey.400', bgcolor: 'grey.50' }}>
           <TimerIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            {t("No hay registros de tiempo")}
+            No hay registros de tiempo
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            {t("Los tiempos registrados por los asociados aparecerán aquí.")}
-          </Typography>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpenCreate(true)}>
+            Crear el primer registro
+          </Button>
         </Paper>
       )}
+
+      <CreateTimesheetModal
+        open={openCreate}
+        onClose={() => setOpenCreate(false)}
+        companyId={companyId}
+        onSuccess={refreshData}
+      />
+
+      <EditTimesheetModal
+        open={openEdit}
+        onClose={() => { setOpenEdit(false); setSelectedRecord(null); }}
+        companyId={companyId}
+        record={selectedRecord}
+        onSuccess={refreshData}
+      />
     </Box>
   );
 }
