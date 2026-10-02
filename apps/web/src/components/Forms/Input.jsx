@@ -1,16 +1,16 @@
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import Textfield from "@mui/material/TextField"
+import TextField from "@mui/material/TextField";
 import { Alert } from "@mui/material";
- 
-export default function Input({ name, type = "text" }) {
+
+export default function Input({ name, label, type = "text", ...rest }) {
   const lowerName = name.toLowerCase();
   const finalType = lowerName.includes("password")
     ? "password"
     : lowerName.includes("email")
       ? "email"
       : type;
-  const { t } = useTranslation(["web", "schemas"]);
+
   const {
     register,
     formState: { errors },
@@ -18,17 +18,19 @@ export default function Input({ name, type = "text" }) {
 
   const error = errors[name];
   const errorMessage = error?.message;
-  
 
   return (
     <div>
-      <Textfield 
-        label={name}
+      <TextField
+        {...rest}
+        label={label || name}
         variant="outlined"
         id={name}
-        type={finalType} 
-        {...register(name)} 
-        required={true} 
+        type={finalType}
+        {...register(name)}
+        required={true}
+        InputLabelProps={{ shrink: true }}
+        slotProps={{ inputLabel: { shrink: true } }}
         sx={{
           m: 1,
           mb: 2,
@@ -37,7 +39,11 @@ export default function Input({ name, type = "text" }) {
         }}
       />
 
-      {errorMessage && <Alert severity="error" sx={{mb:1}}>{t(`schemas:${errorMessage}`)}</Alert>}
+      {errorMessage && (
+        <Alert severity="error" sx={{ mb: 1 }}>
+          {errorMessage}
+        </Alert>
+      )}
     </div>
   );
 }

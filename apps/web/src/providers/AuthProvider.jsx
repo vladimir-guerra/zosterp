@@ -34,7 +34,6 @@ export const AuthProvider = ({ children }) => {
 
   const register = useCallback(async (userData) => {
     try {
-      setIsLoading(true);
       const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -91,8 +90,6 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Error al iniciar sesión", error);
       throw error;
-    } finally {
-      setIsLoading(false);
     }
   }, []);
 

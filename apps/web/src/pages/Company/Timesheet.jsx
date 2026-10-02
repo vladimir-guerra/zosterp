@@ -182,7 +182,7 @@ export default function Timesheet() {
           {canManageTasks && (
             <Button
               variant="contained"
-              onClick={() => navigate(`/company/${companyId}/tasks/new`)}
+              onClick={() => navigate(`../tasks/new`)}
               sx={{ mt: 1 }}
             >
               Crear primera tarea

@@ -1,22 +1,13 @@
-import { useState, memo } from "react";
+import { memo } from "react";
 import {
   Box,
   Typography,
-  Menu,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
   LinearProgress
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import CustomCard from "../../../components/Card/Card.jsx";
 
-const TaskCardItem = memo(function TaskCardItem({ task, canManageTasks = false, onEdit, onDelete, onViewSubtasks }) {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const menuOpen = Boolean(anchorEl);
-
+const TaskCardItem = memo(function TaskCardItem({ task, onEdit }) {
   const checklist = Array.isArray(task.checklist) ? task.checklist : [];
   const totalItems = checklist.length;
   const completedItems = checklist.filter((item) => item.completed).length;
@@ -25,50 +16,14 @@ const TaskCardItem = memo(function TaskCardItem({ task, canManageTasks = false, 
       ? Math.round((completedItems / totalItems) * 100)
       : task.percentDone || 0;
 
-  const handleMenuClick = (event) => {
-    event.stopPropagation();
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = (event) => {
-    event?.stopPropagation();
-    setAnchorEl(null);
-  };
-
-  const executeAction = (event, actionFn) => {
-    event.stopPropagation();
-    setAnchorEl(null);
-    actionFn(task);
-  };
-
   return (
     <CustomCard
       id={task.id}
-      onMenuClick={handleMenuClick}
-      onClick={() => onViewSubtasks(task)}
+      onClick={() => onEdit(task)}
     >
-      <Menu
-        anchorEl={anchorEl}
-        open={menuOpen}
-        onClose={handleMenuClose}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <MenuItem onClick={(e) => executeAction(e, onEdit)}>
-          <ListItemIcon><VisibilityIcon fontSize="small" /></ListItemIcon>
-          <ListItemText>Detalle</ListItemText>
-        </MenuItem>
-        {canManageTasks && (
-          <MenuItem onClick={(e) => executeAction(e, onDelete)} sx={{ color: "error.main" }}>
-            <ListItemIcon><DeleteIcon fontSize="small" color="error" /></ListItemIcon>
-            <ListItemText>Eliminar</ListItemText>
-          </MenuItem>
-        )}
-      </Menu>
-
       <Box
         sx={{
           flexGrow: 1,
-          pr: 2,
           height: "100%",
           display: "flex",
           flexDirection: "column",

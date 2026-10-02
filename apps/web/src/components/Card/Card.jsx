@@ -13,8 +13,8 @@ import {
   Box,
   Typography
 } from "@mui/material";
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useCompany } from "../../providers/CompanyProvider";
 
 export default function Card({ id, children, companyData, onMenuClick, onClick }) {
@@ -26,13 +26,15 @@ export default function Card({ id, children, companyData, onMenuClick, onClick }
   const [formData, setFormData] = useState(companyData || {});
   const [isSaving, setIsSaving] = useState(false);
 
+  const showMenuButton = Boolean(onMenuClick || companyData);
+
   const handleOpen = (e) => {
     e.stopPropagation();
     e.preventDefault();
 
     if (onMenuClick) {
       onMenuClick(e);
-    } else {
+    } else if (companyData) {
       setOpenModal(true);
     }
   };
@@ -43,7 +45,9 @@ export default function Card({ id, children, companyData, onMenuClick, onClick }
       return;
     }
     if (contentRef.current && !contentRef.current.contains(e.target)) {
-      const clickableChild = contentRef.current.querySelector("a, button, [role='button']") || contentRef.current.firstElementChild;
+      const clickableChild =
+        contentRef.current.querySelector("a, button, [role='button']") ||
+        contentRef.current.firstElementChild;
       clickableChild?.click();
     }
   };
@@ -51,7 +55,7 @@ export default function Card({ id, children, companyData, onMenuClick, onClick }
   const handleClose = () => {
     setOpenModal(false);
     setIsEditing(false);
-    setFormData(companyData);
+    setFormData(companyData || {});
   };
 
   const handleEditToggle = () => setIsEditing(!isEditing);
@@ -93,131 +97,141 @@ export default function Card({ id, children, companyData, onMenuClick, onClick }
           position: "relative",
           width: "100%",
           minWidth: 240,
-          height: 200,
+          height: 220,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
           borderRadius: 3,
           cursor: "pointer",
-          userSelect: "none", 
+          userSelect: "none",
           transition: "border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease",
           "&:hover": {
             borderColor: "primary.main",
             boxShadow: 3,
             transform: "translateY(-2px)",
             "& .action-text": {
-              color: "primary.main",
+              color: "primary.main"
             },
             "& .action-arrow": {
               transform: "translateX(4px)",
-              color: "primary.main",
+              color: "primary.main"
             }
           }
         }}
       >
-        <IconButton
-          size="small"
-          sx={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}
-          onClick={handleOpen}
-        >
-          <MoreVertIcon fontSize="small" />
-        </IconButton>
+        {showMenuButton && (
+          <IconButton
+            size="small"
+            sx={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}
+            onClick={handleOpen}
+          >
+            <MoreVertIcon fontSize="small" />
+          </IconButton>
+        )}
 
-        <CardContent 
+        <CardContent
           ref={contentRef}
-          sx={{ 
-            pt: 3, 
+          sx={{
+            pt: 2.5,
             px: 2.5,
-            pb: 1, 
+            pb: 1.5,
             flex: 1,
             minHeight: 0,
-            overflow: "hidden" 
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden"
           }}
         >
           {children}
         </CardContent>
 
-        <Box 
-          sx={{ 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "flex-end", 
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
             px: 2.5,
-            py: 1.5,
+            py: 1.25,
             bgcolor: "grey.50",
             borderTop: "1px solid",
             borderColor: "divider",
             flexShrink: 0
           }}
         >
-          <Typography 
+          <Typography
             className="action-text"
-            variant="caption" 
-            fontWeight="bold" 
+            variant="caption"
+            fontWeight="bold"
             color="text.secondary"
             sx={{ transition: "color 0.2s ease", mr: 0.5 }}
           >
             Click para ingresar
           </Typography>
-          <ArrowForwardIcon 
+          <ArrowForwardIcon
             className="action-arrow"
-            sx={{ color: "text.secondary", fontSize: "0.95rem", transition: "transform 0.2s ease, color 0.2s ease" }} 
+            sx={{
+              color: "text.secondary",
+              fontSize: "0.95rem",
+              transition: "transform 0.2s ease, color 0.2s ease"
+            }}
           />
         </Box>
       </Carta>
 
-      <Dialog open={openModal} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ fontWeight: 'bold' }}>
-          Propiedades de la Empresa
-        </DialogTitle>
+      {companyData && (
+        <Dialog open={openModal} onClose={handleClose} fullWidth maxWidth="sm">
+          <DialogTitle sx={{ fontWeight: "bold" }}>
+            Propiedades de la Empresa
+          </DialogTitle>
 
-        <DialogContent dividers>
-          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-            <TextField
-              label="Razón Social"
-              name="socialReason"
-              value={formData.socialReason || ""}
-              onChange={handleChange}
-              disabled={!isEditing || isSaving}
-              fullWidth
-            />
-            <TextField
-              label="Nombre Comercial"
-              name="commercialName"
-              value={formData.commercialName || ""}
-              onChange={handleChange}
-              disabled={!isEditing || isSaving}
-              fullWidth
-            />
-            <TextField
-              label="Industria"
-              name="type"
-              value={formData.type || ""}
-              onChange={handleChange}
-              disabled={!isEditing || isSaving}
-              fullWidth
-            />
-          </Box>
-        </DialogContent>
+          <DialogContent dividers>
+            <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+              <TextField
+                label="Razón Social"
+                name="socialReason"
+                value={formData.socialReason || ""}
+                onChange={handleChange}
+                disabled={!isEditing || isSaving}
+                fullWidth
+              />
+              <TextField
+                label="Nombre Comercial"
+                name="commercialName"
+                value={formData.commercialName || ""}
+                onChange={handleChange}
+                disabled={!isEditing || isSaving}
+                fullWidth
+              />
+              <TextField
+                label="Industria"
+                name="type"
+                value={formData.type || ""}
+                onChange={handleChange}
+                disabled={!isEditing || isSaving}
+                fullWidth
+              />
+            </Box>
+          </DialogContent>
 
-        <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 2 }}>
-          <Button color="error" variant="outlined" onClick={handleDelete} disabled={isSaving}>
-            Eliminar
-          </Button>
-
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <Button onClick={handleEditToggle} color="inherit" disabled={isSaving}>
-              {isEditing ? "Cancelar" : "Editar"}
+          <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 2 }}>
+            <Button color="error" variant="outlined" onClick={handleDelete} disabled={isSaving}>
+              Eliminar
             </Button>
 
-            {isEditing && (
-              <Button variant="contained" color="primary" onClick={handleSave} disabled={isSaving}>
-                {isSaving ? "Guardando..." : "Guardar"}
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Button onClick={handleEditToggle} color="inherit" disabled={isSaving}>
+                {isEditing ? "Cancelar" : "Editar"}
               </Button>
-            )}
-          </Box>
-        </DialogActions>
-      </Dialog>
+
+              {isEditing && (
+                <Button variant="contained" color="primary" onClick={handleSave} disabled={isSaving}>
+                  {isSaving ? "Guardando..." : "Guardar"}
+                </Button>
+              )}
+            </Box>
+          </DialogActions>
+        </Dialog>
+      )}
     </Grid>
   );
 }

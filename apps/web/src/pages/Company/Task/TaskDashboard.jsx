@@ -67,11 +67,12 @@ export default function TaskDashboard() {
     if (window.confirm("¿Estás seguro de que deseas eliminar esta tarea?")) {
       try {
         await deleteTask(companyId, task.id);
+        handleCloseDialog();
       } catch (error) {
         console.error("Error al eliminar la tarea:", error);
       }
     }
-  }, [companyId, deleteTask, canManageTasks]);
+  }, [companyId, deleteTask, canManageTasks, handleCloseDialog]);
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 } }}>
@@ -123,6 +124,7 @@ export default function TaskDashboard() {
           open={Boolean(selectedTask)}
           defaultEditMode={isDialogEditMode}
           onClose={handleCloseDialog}
+          onDelete={handleDeleteTask}
         />
       )}
     </Box>

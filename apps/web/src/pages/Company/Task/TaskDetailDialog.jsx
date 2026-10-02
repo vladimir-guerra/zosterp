@@ -39,8 +39,8 @@ function CustomTabPanel({ children, value, index, ...other }) {
   );
 }
 
-export default function TaskDetailDialog({ task, companyId, open, onClose, defaultEditMode = false }) {
-  const { updateTask } = useTask();
+export default function TaskDetailDialog({ task, companyId, open, onClose, onDelete, defaultEditMode = false }) {
+  const { updateTask, deleteTask } = useTask();
   const {
     assignments = [],
     fetchAssignments,
@@ -98,7 +98,17 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
     onClose();
   };
 
-  const handleSaveTask = async () => {
+  const handleToggleEdit = () => {
+    if (isEditing) {
+      setFormData(task || {});
+      setIsEditing(false);
+    } else {
+      setIsEditing(true);
+    }
+  };
+
+  const handleSaveTask = async (e) => {
+    e?.preventDefault();
     if (!canManageTasks) return;
     try {
       setSaving(true);
@@ -111,6 +121,27 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
       console.error("Error al actualizar la tarea:", error);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDeleteCurrentTask = async () => {
+    if (!canManageTasks || !task) return;
+
+    if (onDelete) {
+      onDelete(task);
+      return;
+    }
+
+    if (window.confirm("¿Estás seguro de que deseas eliminar esta tarea?")) {
+      try {
+        setSaving(true);
+        await deleteTask(companyId, task.id);
+        handleClose();
+      } catch (error) {
+        console.error("Error al eliminar la tarea:", error);
+      } finally {
+        setSaving(false);
+      }
     }
   };
 
@@ -210,13 +241,15 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
         </Box>
 
         <CustomTabPanel value={tabValue} index={0}>
-          <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          <Box component="form" onSubmit={handleSaveTask} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
             <TextField
               label="Título"
               name="title"
               value={formData.title || ""}
               onChange={handleChange}
-              disabled={!isEditing || !canManageTasks}
+              disabled={!isEditing || !canManageTasks || saving}
+              InputLabelProps={{ shrink: true }}
+              slotProps={{ inputLabel: { shrink: true } }}
               fullWidth
             />
             <TextField
@@ -224,7 +257,9 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
               name="description"
               value={formData.description || ""}
               onChange={handleChange}
-              disabled={!isEditing || !canManageTasks}
+              disabled={!isEditing || !canManageTasks || saving}
+              InputLabelProps={{ shrink: true }}
+              slotProps={{ inputLabel: { shrink: true } }}
               fullWidth
               multiline
               minRows={4}
@@ -405,18 +440,30 @@ export default function TaskDetailDialog({ task, companyId, open, onClose, defau
         </CustomTabPanel>
       </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 2, pt: 2 }}>
+      <DialogActions sx={{ px: 3, pb: 2, pt: 2, display: "flex", justifyContent: "space-between" }}>
         {tabValue === 0 && canManageTasks && (
-          <Box sx={{ display: "flex", gap: 1, ml: "auto" }}>
-            <Button onClick={() => setIsEditing(!isEditing)} color="inherit">
-              {isEditing ? "Cancelar" : "Editar Tarea"}
+          <>
+            <Button
+              color="error"
+              variant="outlined"
+              startIcon={<DeleteIcon />}
+              onClick={handleDeleteCurrentTask}
+              disabled={saving}
+            >
+              Eliminar
             </Button>
-            {isEditing && (
-              <Button variant="contained" color="primary" onClick={handleSaveTask} disabled={saving}>
-                {saving ? "Guardando..." : "Guardar Cambios"}
+
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Button onClick={handleToggleEdit} color="inherit" disabled={saving}>
+                {isEditing ? "Cancelar" : "Editar"}
               </Button>
-            )}
-          </Box>
+              {isEditing && (
+                <Button variant="contained" color="primary" onClick={handleSaveTask} disabled={saving}>
+                  {saving ? "Guardando..." : "Guardar"}
+                </Button>
+              )}
+            </Box>
+          </>
         )}
       </DialogActions>
     </Dialog>
