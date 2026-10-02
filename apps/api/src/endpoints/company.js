@@ -190,7 +190,8 @@ export const updateTask = async (req, res, next) => {
   try {
     const { companyId, taskId } = req.params;
     const userId = req.user.id;
-    const updateData = req.body;
+
+    const { title, description, checklist, startedAt, approximateFinishDate } = req.body;
 
     if (!companyId || !taskId) {
       throw createError(400, "Se requiere el ID de la empresa y de la tarea");
@@ -212,7 +213,14 @@ export const updateTask = async (req, res, next) => {
       throw createError(404, "Tarea no encontrada en esta empresa");
     }
 
-    await task.update(updateData);
+    const fieldsToUpdate = {};
+    if (title !== undefined) fieldsToUpdate.title = title;
+    if (description !== undefined) fieldsToUpdate.description = description;
+    if (checklist !== undefined) fieldsToUpdate.checklist = checklist;
+    if (startedAt !== undefined) fieldsToUpdate.startedAt = startedAt;
+    if (approximateFinishDate !== undefined) fieldsToUpdate.approximateFinishDate = approximateFinishDate || null;
+
+    await task.update(fieldsToUpdate);
 
     return res.status(200).json({
       message: "Tarea actualizada exitosamente",
@@ -250,7 +258,7 @@ export const deleteTask = async (req, res, next) => {
     }
     const taskDestroyed = await task.destroy();
     console.log(taskDestroyed);
-    
+
     return res.status(200).json({
       message: "Tarea eliminada exitosamente"
     });

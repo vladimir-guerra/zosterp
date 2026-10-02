@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 
 const CompanyContext = createContext();
 const API_URL = `${import.meta.env.VITE_API_URL}/company`;
@@ -9,16 +9,25 @@ export const CompanyProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const storedCompany = localStorage.getItem("currentCompany");
-    if (storedCompany) {
-      setCurrentCompany(JSON.parse(storedCompany));
+    try {
+      const storedCompany = localStorage.getItem("currentCompany");
+      if (storedCompany) {
+        setCurrentCompany(JSON.parse(storedCompany));
+      }
+    } catch (error) {
+      console.error("Error al leer currentCompany de localStorage:", error);
+      localStorage.removeItem("currentCompany");
     }
   }, []);
 
-  const selectCompany = (company) => {
+  const selectCompany = useCallback((company) => {
     setCurrentCompany(company);
-    localStorage.setItem("currentCompany", JSON.stringify(company));
-  };
+    if (company) {
+      localStorage.setItem("currentCompany", JSON.stringify(company));
+    } else {
+      localStorage.removeItem("currentCompany");
+    }
+  }, []);
 
   const fetchCompanies = useCallback(async () => {
     try {
@@ -37,7 +46,7 @@ export const CompanyProvider = ({ children }) => {
     }
   }, []);
 
-  const createCompany = async (payload) => {
+  const createCompany = useCallback(async (payload) => {
     try {
       const response = await fetch(`${API_URL}`, {
         method: "POST",
@@ -56,9 +65,9 @@ export const CompanyProvider = ({ children }) => {
       console.error("Error en createCompany:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const updateCompany = async (companyId, payload) => {
+  const updateCompany = useCallback(async (companyId, payload) => {
     try {
       const response = await fetch(`${API_URL}/${companyId}`, {
         method: "PATCH", 
@@ -71,17 +80,22 @@ export const CompanyProvider = ({ children }) => {
       
       setCompanies((prev) => prev.map(c => c.id === companyId ? jsonResponse.data : c));
       
-      if (currentCompany?.id === companyId) {
-        selectCompany(jsonResponse.data);
-      }
+      setCurrentCompany((prev) => {
+        if (prev?.id === companyId) {
+          localStorage.setItem("currentCompany", JSON.stringify(jsonResponse.data));
+          return jsonResponse.data;
+        }
+        return prev;
+      });
+
       return jsonResponse.data;
     } catch (error) {
       console.error("Error en updateCompany:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const deleteCompany = async (companyId) => {
+  const deleteCompany = useCallback(async (companyId) => {
     try {
       const response = await fetch(`${API_URL}/${companyId}`, {
         method: "DELETE",
@@ -91,23 +105,44 @@ export const CompanyProvider = ({ children }) => {
       
       setCompanies((prev) => prev.filter(c => c.id !== companyId));
       
-      if (currentCompany?.id === companyId) {
-        setCurrentCompany(null);
-        localStorage.removeItem("currentCompany");
-      }
+      setCurrentCompany((prev) => {
+        if (prev?.id === companyId) {
+          localStorage.removeItem("currentCompany");
+          return null;
+        }
+        return prev;
+      });
     } catch (error) {
       console.error("Error en deleteCompany:", error);
       throw error;
     }
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      companies,
+      currentCompany,
+      isLoading,
+      selectCompany,
+      fetchCompanies,
+      createCompany,
+      updateCompany,
+      deleteCompany,
+    }),
+    [
+      companies,
+      currentCompany,
+      isLoading,
+      selectCompany,
+      fetchCompanies,
+      createCompany,
+      updateCompany,
+      deleteCompany,
+    ]
+  );
 
   return (
-    <CompanyContext.Provider 
-      value={{ 
-        companies, currentCompany, isLoading, selectCompany, 
-        fetchCompanies, createCompany, updateCompany, deleteCompany 
-      }}
-    >
+    <CompanyContext.Provider value={contextValue}>
       {children}
     </CompanyContext.Provider>
   );

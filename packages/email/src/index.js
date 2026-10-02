@@ -18,7 +18,7 @@ export const transporter = createTransport({
 
 export const sendMail = async ({ to, subject, html }) => {
   const info = await transporter.sendMail({
-    from: `Zosterp owner <${testAccount.user}>`,
+    from: `Dueño de la compañía: <${testAccount.user}>`,
     to,
     subject,
     html,

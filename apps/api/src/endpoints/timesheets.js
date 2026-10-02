@@ -1,4 +1,4 @@
-import { Role, Timesheet, User, Task, Assignment, Associate } from "@repo/database";
+import { Timesheet, User, Task, Assignment, Associate } from "@repo/database";
 import createError from "http-errors";
 
 export const getTimesheets = async (req, res, next) => {
@@ -44,7 +44,7 @@ export const createTimesheet = async (req, res, next) => {
             taskId,
             assignmentId,
             startedAt,
-            finishedAt
+            finishedAt: finishedAt || null
         });
 
         res.status(201).json({ response: "Registro creado exitosamente", data: timesheet });

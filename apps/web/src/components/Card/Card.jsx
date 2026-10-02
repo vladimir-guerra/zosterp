@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useState, useRef } from "react";
 import {
   Button,
   Card as Carta,
@@ -11,14 +10,16 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Box
+  Box,
+  Typography
 } from "@mui/material";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useCompany } from "../../providers/CompanyProvider";
 
-export default function Card({ id, children, companyData, onMenuClick }) {
-  const { t } = useTranslation("web");
+export default function Card({ id, children, companyData, onMenuClick, onClick }) {
   const { updateCompany, deleteCompany } = useCompany();
+  const contentRef = useRef(null);
 
   const [openModal, setOpenModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -33,6 +34,17 @@ export default function Card({ id, children, companyData, onMenuClick }) {
       onMenuClick(e);
     } else {
       setOpenModal(true);
+    }
+  };
+
+  const handleCardClick = (e) => {
+    if (onClick) {
+      onClick(e);
+      return;
+    }
+    if (contentRef.current && !contentRef.current.contains(e.target)) {
+      const clickableChild = contentRef.current.querySelector("a, button, [role='button']") || contentRef.current.firstElementChild;
+      clickableChild?.click();
     }
   };
 
@@ -76,15 +88,30 @@ export default function Card({ id, children, companyData, onMenuClick }) {
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <Carta
         variant="outlined"
+        onClick={handleCardClick}
         sx={{
-          padding: 1,
           position: "relative",
-          height: "100%",
+          width: "100%",
+          minWidth: 240,
+          height: 200,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
           borderRadius: 3,
-          transition: "border-color 0.15s ease, box-shadow 0.15s ease",
+          cursor: "pointer",
+          userSelect: "none", 
+          transition: "border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease",
           "&:hover": {
             borderColor: "primary.main",
-            boxShadow: 1
+            boxShadow: 3,
+            transform: "translateY(-2px)",
+            "& .action-text": {
+              color: "primary.main",
+            },
+            "& .action-arrow": {
+              transform: "translateX(4px)",
+              color: "primary.main",
+            }
           }
         }}
       >
@@ -96,9 +123,47 @@ export default function Card({ id, children, companyData, onMenuClick }) {
           <MoreVertIcon fontSize="small" />
         </IconButton>
 
-        <CardContent sx={{ width: "100%", pt: 3, pb: "16px !important", height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <CardContent 
+          ref={contentRef}
+          sx={{ 
+            pt: 3, 
+            px: 2.5,
+            pb: 1, 
+            flex: 1,
+            minHeight: 0,
+            overflow: "hidden" 
+          }}
+        >
           {children}
         </CardContent>
+
+        <Box 
+          sx={{ 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "flex-end", 
+            px: 2.5,
+            py: 1.5,
+            bgcolor: "grey.50",
+            borderTop: "1px solid",
+            borderColor: "divider",
+            flexShrink: 0
+          }}
+        >
+          <Typography 
+            className="action-text"
+            variant="caption" 
+            fontWeight="bold" 
+            color="text.secondary"
+            sx={{ transition: "color 0.2s ease", mr: 0.5 }}
+          >
+            Click para ingresar
+          </Typography>
+          <ArrowForwardIcon 
+            className="action-arrow"
+            sx={{ color: "text.secondary", fontSize: "0.95rem", transition: "transform 0.2s ease, color 0.2s ease" }} 
+          />
+        </Box>
       </Carta>
 
       <Dialog open={openModal} onClose={handleClose} fullWidth maxWidth="sm">
@@ -109,7 +174,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
         <DialogContent dividers>
           <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             <TextField
-              label={"Razón Social"}
+              label="Razón Social"
               name="socialReason"
               value={formData.socialReason || ""}
               onChange={handleChange}
@@ -117,7 +182,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
               fullWidth
             />
             <TextField
-              label={"Nombre Comercial"}
+              label="Nombre Comercial"
               name="commercialName"
               value={formData.commercialName || ""}
               onChange={handleChange}
@@ -125,7 +190,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
               fullWidth
             />
             <TextField
-              label={"Industria"}
+              label="Industria"
               name="type"
               value={formData.type || ""}
               onChange={handleChange}
@@ -137,7 +202,7 @@ export default function Card({ id, children, companyData, onMenuClick }) {
 
         <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 2 }}>
           <Button color="error" variant="outlined" onClick={handleDelete} disabled={isSaving}>
-            {"Eliminar"}
+            Eliminar
           </Button>
 
           <Box sx={{ display: "flex", gap: 1 }}>

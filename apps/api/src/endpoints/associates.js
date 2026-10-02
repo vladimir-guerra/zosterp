@@ -5,44 +5,45 @@ import { sendMail } from "@repo/email";
 
 export const getAssociates = async (req, res, next) => {
     try {
-        const { id: userId } = req.user;
+        const userId = req.user.id;
+        let { companyId } = req.query;
 
-        const userAssociate = await Associate.findOne({ where: { userId } });
-        if (!userAssociate) {
-            throw createError(403, "No tienes una compañía asignada");
+        if (!companyId) {
+            const myAssociateRecord = await Associate.findOne({
+                where: { userId }
+            });
+
+            if (!myAssociateRecord) {
+                return res.status(200).json({ data: [], currentUserId: userId });
+            }
+
+            companyId = myAssociateRecord.companyId;
         }
 
-        const associatesResult = await Associate.findAll({
-            where: {
-                companyId: userAssociate.companyId,
-                userId: { [Op.ne]: userId }
-            },
-            attributes: {
-                exclude: ['deletedAt', 'createdAt', 'updatedAt']
-            },
+        const associates = await Associate.findAll({
+            where: { companyId },
             include: [
                 {
                     model: User,
-                    attributes: ['name', 'surname', 'email'],
-                    include: [ 
+                    attributes: ["id", "name", "surname", "email", "roleId"],
+                    include: [
                         {
                             model: Role,
-                            attributes: ['name']
+                            attributes: ["id", "name"]
                         }
                     ]
                 }
             ]
         });
 
-        res.status(200).json({
-            response: "Usuarios encontrados",
-            data: associatesResult 
+        return res.status(200).json({
+            data: associates,
+            currentUserId: userId
         });
     } catch (error) {
-        console.error(error);
         next(error);
     }
-}
+};
 
 export const createAssociate = async (req, res, next) => {
     try {
@@ -133,3 +134,39 @@ export const removeAssociate = async (req, res, next) => {
         next(error);
     }
 }
+
+export const updateAssociate = async (req, res, next) => {
+    try {
+        const { companyId } = req.params;
+        const { userId, roleName } = req.body;
+
+        const associate = await Associate.findOne({
+            where: { userId: userId, companyId: companyId }
+        });
+
+        if (!associate) {
+            throw createError(404, "Asociado no encontrado en esta compañía");
+        }
+
+        let targetRoleId;
+        if (!targetRoleId && roleName) {
+            if (roleName === "owner") {
+                throw createError(403, "Solo puede haber un propietario por compañía");
+            }
+            const roleRecord = await Role.findOne({ where: { name: roleName } });
+            if (!roleRecord) {
+                throw createError(404, "El rol especificado no existe");
+            }
+            targetRoleId = roleRecord.id;
+        }
+
+        await User.update({ roleId: targetRoleId }, { where: { id: userId } });
+
+        res.status(200).json({
+            response: "Se ha actualizado el rol del asociado",
+            data: { id: User.id, roleId: targetRoleId, roleName }
+        });
+    } catch (error) {
+        next(error);
+    }
+};

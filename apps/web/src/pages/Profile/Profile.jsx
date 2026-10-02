@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next";
 import { useAuth } from "../../providers/AuthProvider";
 import {
   Button,
@@ -11,7 +10,6 @@ import {
 
 export default function Profile() {
   const { user, logout } = useAuth();
-  const { t } = useTranslation();
 
   return (
     <Box sx={{ p: { xs: 2, md: 4 }, display: 'flex', justifyContent: 'center' }}>
@@ -27,7 +25,6 @@ export default function Profile() {
           gap: 3
         }}
       >
-        {/* Cabecera del apartado */}
         <Box>
           <Typography variant="h5" component="h1" fontWeight="bold" color="primary.main">
             Mi Perfil
@@ -60,6 +57,16 @@ export default function Profile() {
             fullWidth
             disabled
             value={user?.email || "No registrado"}
+          />
+          <TextField
+            label={"Rol"}
+            variant="outlined"
+            fullWidth
+            disabled
+            value={user?.Role.name === 'owner' ? 'Dueño' :
+              user?.Role.name === 'adminTask' ? 'Administrador de tareas' :
+                user?.Role.name === 'associate' ? 'Asociado' : 'Asociado'
+            }
           />
         </Box>
 

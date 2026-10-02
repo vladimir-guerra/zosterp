@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 
 const AuthContext = createContext(undefined);
 const API_URL = `${import.meta.env.VITE_API_URL}/auth`;
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const register = async (userData) => {
+  const register = useCallback(async (userData) => {
     try {
       setIsLoading(true);
       const response = await fetch(`${API_URL}/register`, {
@@ -58,16 +58,15 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const login = async (credentials) => {
+  const login = useCallback(async (credentials) => {
     try {
-      
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
-        credentials: "include", 
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -78,7 +77,7 @@ export const AuthProvider = ({ children }) => {
       const meResponse = await fetch(`${API_URL}/me`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", 
+        credentials: "include",
       });
 
       if (!meResponse.ok) {
@@ -86,7 +85,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       const meData = await meResponse.json();
-      setUser(meData.user); 
+      setUser(meData.user);
       return true;
 
     } catch (error) {
@@ -95,9 +94,9 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       setIsLoading(true);
       await fetch(`${API_URL}/logout`, {
@@ -110,12 +109,22 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      user,
+      isAuthenticated: !!user,
+      isLoading,
+      login,
+      logout,
+      register,
+    }),
+    [user, isLoading, login, logout, register]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{ user, isAuthenticated: !!user, login, logout, isLoading, register }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

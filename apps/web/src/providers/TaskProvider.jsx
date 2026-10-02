@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
 import { useCompany } from "./CompanyProvider";
 
 const TaskContext = createContext();
@@ -33,9 +33,9 @@ export const TaskProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [currentCompany]);
+  }, [currentCompany?.id]);
 
-  const createTask = async (payload) => {
+  const createTask = useCallback(async (payload) => {
     try {
       const response = await fetch(`${API_URL}/${payload.companyId}`, {
         method: "POST",
@@ -55,9 +55,9 @@ export const TaskProvider = ({ children }) => {
       console.error("Error en createTask:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const updateTask = async (companyId, taskId, payload) => {
+  const updateTask = useCallback(async (companyId, taskId, payload) => {
     try {
       const response = await fetch(`${API_URL}/${companyId}/tasks/${taskId}`, {
         method: "PATCH",
@@ -77,28 +77,38 @@ export const TaskProvider = ({ children }) => {
       console.error("Error en updateTask:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const deleteTask = async (companyId, taskId) => {
+  const deleteTask = useCallback(async (companyId, taskId) => {
     try {
       const response = await fetch(`${API_URL}/${companyId}/tasks/${taskId}`, {
         method: "DELETE",
         credentials: "include",
       });
       if (!response.ok) throw new Error("Error al eliminar la tarea");
-      const data = await response.json();
+      await response.json();
       
       setTasks((prev) => prev.filter(task => task.id !== taskId));
     } catch (error) {
       console.error("Error en deleteTask:", error);
       throw error;
     }
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      tasks,
+      isLoading,
+      fetchTasks,
+      createTask,
+      updateTask,
+      deleteTask,
+    }),
+    [tasks, isLoading, fetchTasks, createTask, updateTask, deleteTask]
+  );
 
   return (
-    <TaskContext.Provider
-      value={{ tasks, isLoading, fetchTasks, createTask, updateTask, deleteTask }}
-    >
+    <TaskContext.Provider value={contextValue}>
       {children}
     </TaskContext.Provider>
   );

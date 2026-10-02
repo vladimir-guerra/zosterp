@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
 
 const TaskTrackingContext = createContext();
 export const useTaskTracking = () => useContext(TaskTrackingContext);
@@ -18,6 +18,7 @@ export const TaskTrackingProvider = ({ children }) => {
 
   const fetchAssignments = useCallback(async (taskId) => {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${URL_ASSIGNMENTS}/task/${taskId}`, {
         credentials: "include",
@@ -32,8 +33,9 @@ export const TaskTrackingProvider = ({ children }) => {
     }
   }, []);
 
-  const createAssignment = async (companyId, taskId, payload) => {
+  const createAssignment = useCallback(async (companyId, taskId, payload) => {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${URL_ASSIGNMENTS}/${companyId}/${taskId}`, {
         method: "POST",
@@ -51,10 +53,11 @@ export const TaskTrackingProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [fetchAssignments]);
 
-  const updateAssignment = async (companyId, assignmentId, payload) => {
+  const updateAssignment = useCallback(async (companyId, assignmentId, payload) => {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${URL_ASSIGNMENTS}/${companyId}/${assignmentId}`, {
         method: "PUT",
@@ -71,10 +74,11 @@ export const TaskTrackingProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const deleteAssignment = async (companyId, assignmentId) => {
+  const deleteAssignment = useCallback(async (companyId, assignmentId) => {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${URL_ASSIGNMENTS}/${companyId}/${assignmentId}`, {
         method: "DELETE",
@@ -90,14 +94,17 @@ export const TaskTrackingProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   // TIMESHEETS 
 
   const fetchTimesheets = useCallback(async (companyId) => {
+    if (!companyId) return;
+    setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${URL_TIMESHEETS}/${companyId}`, {
-        method: 'GET',
+        method: "GET",
         credentials: "include"
       });
       const data = await response.json();
@@ -110,7 +117,9 @@ export const TaskTrackingProvider = ({ children }) => {
     }
   }, []);
 
-  const createTimesheet = async (payload, companyId) => {
+  const createTimesheet = useCallback(async (payload, companyId) => {
+    setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${URL_TIMESHEETS}/${companyId}`, {
         method: "POST",
@@ -120,7 +129,6 @@ export const TaskTrackingProvider = ({ children }) => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Error al registrar tiempo");
-      if (payload.taskId) await fetchTimesheets(payload.taskId);
       return data;
     } catch (err) {
       setError(err.message);
@@ -128,10 +136,11 @@ export const TaskTrackingProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const updateTimesheet = async (payload, companyId) => {
+  const updateTimesheet = useCallback(async (payload, companyId) => {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${URL_TIMESHEETS}/${companyId}/${payload.id}`, {
         method: "PATCH",
@@ -148,10 +157,11 @@ export const TaskTrackingProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const deleteTimesheet = async (payload, companyId) => {
+  const deleteTimesheet = useCallback(async (payload, companyId) => {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(`${URL_TIMESHEETS}/${companyId}/${payload.id}`, {
         method: "DELETE",
@@ -169,25 +179,41 @@ export const TaskTrackingProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  const contextValue = useMemo(
+    () => ({
+      assignments,
+      timesheets,
+      isLoading,
+      error,
+      fetchAssignments,
+      createAssignment,
+      updateAssignment,
+      deleteAssignment,
+      fetchTimesheets,
+      createTimesheet,
+      updateTimesheet,
+      deleteTimesheet,
+    }),
+    [
+      assignments,
+      timesheets,
+      isLoading,
+      error,
+      fetchAssignments,
+      createAssignment,
+      updateAssignment,
+      deleteAssignment,
+      fetchTimesheets,
+      createTimesheet,
+      updateTimesheet,
+      deleteTimesheet,
+    ]
+  );
 
   return (
-    <TaskTrackingContext.Provider
-      value={{
-        assignments,
-        timesheets,
-        isLoading,
-        error,
-        fetchAssignments,
-        createAssignment,
-        updateAssignment,
-        deleteAssignment,
-        fetchTimesheets,
-        createTimesheet,
-        updateTimesheet,
-        deleteTimesheet,
-      }}
-    >
+    <TaskTrackingContext.Provider value={contextValue}>
       {children}
     </TaskTrackingContext.Provider>
   );

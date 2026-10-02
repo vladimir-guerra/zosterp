@@ -1,24 +1,27 @@
-import { DataTypes, Op } from "sequelize";
+import { DataTypes } from "sequelize";
 import { sequelize } from "../connection.js";
 
 const updateParentProgress = async (parentId) => {
   if (!parentId) return;
 
-  const total = await Task.count({ where: { parentId } });
-  const done = await Task.count({
-    where: { parentId, finishedAt: { [Op.ne]: null } },
+  const subtasks = await Task.findAll({
+    where: { parentId },
+    attributes: ["percentDone"],
   });
 
   const parent = await Task.findByPk(parentId);
   if (parent) {
-    const newPercent = total > 0 ? Math.round((done * 100) / total) : 0;
+    const total = subtasks.length;
+    const sumPercent = subtasks.reduce((acc, sub) => acc + (sub.percentDone || 0), 0);
+    const newPercent = total > 0 ? Math.round(sumPercent / total) : 0;
+
     if (
       parent.percentDone !== newPercent ||
-      (newPercent === 100 && !parent.finishedAt)
+      (newPercent === 100 && !parent.finishedAt) ||
+      (newPercent < 100 && parent.finishedAt)
     ) {
       parent.percentDone = newPercent;
-      if (newPercent === 100) parent.finishedAt = new Date();
-      else parent.finishedAt = null;
+      parent.finishedAt = newPercent === 100 ? new Date() : null;
       await parent.save();
     }
   }
@@ -46,7 +49,7 @@ export const Task = sequelize.define(
       references: {
         key: "id",
         model: "associates",
-      }
+      },
     },
     title: {
       type: DataTypes.STRING,
@@ -55,6 +58,11 @@ export const Task = sequelize.define(
     description: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    checklist: {
+      type: DataTypes.JSONB,
+      allowNull: false,
+      defaultValue: [],
     },
     percentDone: {
       type: DataTypes.INTEGER,
@@ -78,13 +86,31 @@ export const Task = sequelize.define(
     timestamps: true,
     paranoid: true,
     underscored: true,
+    indexes: [
+      { fields: ["parent_id"] },
+      { fields: ["associate_id"] },
+    ],
     hooks: {
-        afterSave: async (task) => {
-          if (task.parentId) await updateParentProgress(task.parentId);
-        },
-        afterDestroy: async (task) => {
-          if (task.parentId) await updateParentProgress(task.parentId);
-        },
+      beforeSave: (task) => {
+        if (task.changed("checklist") && Array.isArray(task.checklist)) {
+          const total = task.checklist.length;
+          if (total > 0) {
+            const completed = task.checklist.filter((item) => item.completed).length;
+            const newPercent = Math.round((completed * 100) / total);
+            task.percentDone = newPercent;
+            task.finishedAt = newPercent === 100 ? new Date() : null;
+          } else {
+            task.percentDone = 0;
+            task.finishedAt = null;
+          }
+        }
+      },
+      afterSave: async (task) => {
+        if (task.parentId) await updateParentProgress(task.parentId);
+      },
+      afterDestroy: async (task) => {
+        if (task.parentId) await updateParentProgress(task.parentId);
+      },
     },
-  },
+  }
 );

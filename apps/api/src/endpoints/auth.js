@@ -5,6 +5,7 @@ import { sendMail } from "@repo/email";
 import getLocales from "../utils/locales.js";
 import jwt from "jsonwebtoken";
 import { Role } from "@repo/database";
+import { table } from "console";
 
 const loginHandler = async (req, res, recordUser) => {
   if (!recordUser) {
@@ -46,7 +47,11 @@ export const me = async (req, res, next) => {
     const userId = req.user.id;
 
     const result = await User.findByPk(userId, {
-      attributes: { exclude: ['password', 'twoFactorCode'] }
+      attributes: { exclude: ['password', 'twoFactorCode'] },
+      include: [{
+        model: Role,
+        attributes: ['name']
+      }]
     });
 
     if (!result) {

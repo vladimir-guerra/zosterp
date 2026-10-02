@@ -1,23 +1,18 @@
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
-import { Box, Paper, Typography, Divider, Button } from "@mui/material";
+import { Box, Paper, Typography, Divider } from "@mui/material";
 import { insertTaskSchema } from "@repo/schemas";
 import { Form, Input } from "../../../components";
 import { useTask } from "../../../providers/TaskProvider";
 
 export default function TaskForm() {
-  const { t } = useTranslation("web");
   const navigate = useNavigate();
   const { id: companyId } = useParams();
   const [searchParams] = useSearchParams();
   const parentId = searchParams.get("parentId");
   const { createTask } = useTask();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (data) => {
     try {
-      setIsSubmitting(true);
       const payload = {
         ...data,
         companyId: companyId,
@@ -27,26 +22,24 @@ export default function TaskForm() {
       navigate(parentId ? `..?parentId=${parentId}` : "..");
     } catch (error) {
       console.error("Error al crear la tarea:", error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', p: 2 }}>
-      <Paper elevation={3} sx={{ p: { xs: 3, md: 4 }, borderRadius: 2, width: '100%', maxWidth: 500, mt: 4 }}>
-        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Box sx={{ width: "100%", display: "flex", justifyContent: "center", p: 2 }}>
+      <Paper elevation={3} sx={{ p: { xs: 3, md: 4 }, borderRadius: 2, width: "100%", maxWidth: 500, mt: 4 }}>
+        <Box sx={{ mb: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Typography variant="h5" component="h2" color="primary.main" fontWeight="bold">
             {parentId ? "Crear Subtarea" : "Crear Tarea"}
           </Typography>
         </Box>
         <Divider sx={{ mb: 3 }} />
         <Form schema={insertTaskSchema} handler={handleSubmit}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Input name={"title"} label={"Título"} />
-            <Input name={"description"} label={"Descripción"} />
-            <Input variant="outlined" name={"startedAt"} type="date" label={"Fecha de inicio"} />
-            <Input variant="outlined" name={"approximateFinishDate"} type="date" label={"Fecha de fin aprox."} />
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Input name="title" label="Título" />
+            <Input name="description" label="Descripción" />
+            <Input variant="outlined" name="startedAt" type="date" label="Fecha de inicio" />
+            <Input variant="outlined" name="approximateFinishDate" type="date" label="Fecha de fin aprox." />
           </Box>
         </Form>
       </Paper>
